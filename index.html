@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IIT JAM Tracker - Batcomputer</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0a0a0c;
+            --card-bg: #15161a;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --border-color: #2d3139;
+            --accent-red: #c53030;
+            --accent-red-hover: #9b2c2c;
+            --accent-green: #f5c71a;
+            --accent-green-hover: #d4a810;
+            --tab-active: #22252a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            transition: background-color 0.8s ease-in-out;
+        }
+
+        .container { width: 100%; max-width: 600px; }
+
+        /* Auth Screen */
+        #authSection { display: block; margin-top: 50px; }
+        #appSection { display: none; }
+
+        .auth-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .auth-card input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 4px;
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-green);
+            color: #0a0a0c;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Header & Controls */
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .header-left h3 { color: var(--text-muted); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; }
+        .header-left h1 { font-size: 36px; margin: 5px 0; font-weight: normal; }
+        .header-left p { color: var(--text-muted); font-size: 14px; }
+        .badge { border: 1px solid var(--text-main); padding: 5px 10px; font-size: 12px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+        .logout-btn { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 5px 8px; font-size: 11px; cursor: pointer; border-radius: 4px; }
+
+        /* Idle Yellow Alert Mode */
+        body.idle-mode { background-color: var(--accent-green); }
+        body.idle-mode .header-left h3, body.idle-mode .header-left h1, body.idle-mode .header-left p, body.idle-mode .badge { color: #0a0a0c; border-color: #0a0a0c; }
+        body.idle-mode .tab-btn { color: #333; border-color: rgba(0,0,0,0.3); }
+        body.idle-mode .tab-btn.active { background: #0a0a0c; color: var(--accent-green); border-color: #0a0a0c; }
+
+        /* Tabs & Cards */
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 12px; }
+        .tab-btn.active { color: var(--text-main); border-color: var(--text-main); background: var(--tab-active); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .card-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
+
+        /* Punch Clock */
+        .progress-bar { width: 100%; height: 8px; background: var(--border-color); border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent-green); width: 0%; transition: width 1s; }
+        .punch-btn { width: 100%; padding: 15px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: background-color 0.5s ease; }
+        .btn-in { background-color: var(--accent-green); color: #0a0a0c; }
+        .btn-out { background-color: var(--accent-red); color: white; }
+        .bat-anim { animation: bat-flip 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes bat-flip { 0% { transform: rotateX(0deg); } 50% { transform: rotateX(180deg) scale(1.6); } 100% { transform: rotateX(360deg); } }
+        .punch-status { text-align: center; margin-top: 10px; font-size: 12px; }
+
+        /* Distraction Dump & Blocks */
+        .distraction-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .distraction-input { flex: 1; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 4px; }
+        .distraction-btn { background: var(--border-color); color: var(--text-main); border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; }
+        .distraction-list { list-style: none; font-size: 13px; color: var(--text-muted); }
+        .distraction-list li { padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
+        .distraction-list li::before { content: "› "; color: var(--accent-green); }
+        .task-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
+        .task-radio { width: 20px; height: 20px; margin-right: 15px; }
+        .end-day-btn { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); margin-top: 15px; cursor: pointer; }
+
+        /* Analytics */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .stat-box { background: var(--bg-color); padding: 15px; border: 1px solid var(--border-color); text-align: center; border-radius: 6px; }
+        .stat-box p { font-size: 24px; font-weight: bold; color: var(--accent-green); }
+        .log-entry { padding: 10px 0; border-bottom: 1px dashed var(--border-color); font-size: 13px; }
+        .punishment-text { color: var(--accent-red); font-weight: bold; }
+    </style>
+</head>
+<body class="idle-mode">
+
+    <div class="container">
+        <div id="authSection">
+            <div class="auth-card">
+                <h2 style="color:var(--accent-green); margin-bottom:15px;">BATCOMPUTER ACCESS</h2>
+                <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">Enter credentials to synchronize across devices</p>
+                <input type="email" id="authEmail" placeholder="Email Address">
+                <input type="password" id="authPassword" placeholder="Password">
+                <button class="auth-btn" onclick="handleAuth('login')">LOGIN</button>
+                <button class="auth-btn" style="background:#2d3139; color:white; margin-top:5px;" onclick="handleAuth('signup')">CREATE ACCOUNT</button>
+                <button class="auth-btn" style="background:transparent; border:1px solid var(--text-muted); color:var(--text-muted); margin-top:5px;" onclick="sendVerification()">RESEND VERIFICATION EMAIL</button>
+                <p id="authMsg" style="margin-top:15px; font-size:12px; color:var(--accent-red);"></p>
+            </div>
+        </div>
+
+        <div id="appSection">
+            <div class="header">
+                <div class="header-left">
+                    <h3>IIT JAM — TIME CLOCK</h3>
+                    <h1 id="liveClock">00:00:00 AM</h1>
+                    <p id="liveDate">Loading Date...</p>
+                </div>
+                <div class="header-right">
+                    <div class="badge" id="dayTypeBadge">WEEKDAY</div><br>
+                    <button class="logout-btn" onclick="firebase.auth().signOut()">LOG OUT</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('today')">⏱ TODAY</button>
+                <button class="tab-btn" onclick="switchTab('calendar')">📅 CALENDAR</button>
+                <button class="tab-btn" onclick="switchTab('analytics')">📊 ANALYTICS</button>
+                <button class="tab-btn" onclick="switchTab('punishments')">⚠️ PUNISHMENTS</button>
+            </div>
+
+            <div id="today" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <span>Punch Clock</span>
+                        <span id="hoursProgress">0.0 / 7.5 hrs</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar"></div>
+                    </div>
+                    <button id="punchBtn" class="punch-btn btn-in" onclick="togglePunch()">
+                        <svg id="batLogo" viewBox="0 0 100 60" width="30" height="18" fill="currentColor">
+                            <path d="M 50 15 L 47 18 L 44 14 L 43 20 C 30 20 20 25 10 30 C 20 28 30 35 30 45 C 40 40 45 45 50 55 C 55 45 60 40 70 45 C 70 35 80 28 90 30 C 80 25 70 20 57 20 L 56 14 L 53 18 Z"></path>
+                        </svg>
+                        <span id="punchText">PUNCH IN</span>
+                    </button>
+                    <div class="punch-status" id="punchStatus">stopped · 0m</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><span>Distraction Dump (Deep Work)</span></div>
+                    <form class="distraction-input-group" onsubmit="addDistraction(event)">
+                        <input type="text" id="distractionInput" class="distraction-input" placeholder="Enter a distracting thought..." autocomplete="off">
+                        <button type="submit" class="distraction-btn">DUMP</button>
+                    </form>
+                    <ul class="distraction-list" id="distractionList"></ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><span>Today's Blocks</span></div>
+                    <ul class="task-list" id="taskList"></ul>
+                    <button class="end-day-btn" onclick="endDay()">End Day & Check</button>
+                </div>
+            </div>
+
+            <div id="calendar" class="tab-content">
+                <div class="card">
+                    <div class="card-header"><span>Calendar</span></div>
+                    <p style="color:var(--text-muted); font-size:14px;">Cloud sync active. Calendar overview updating soon.</p>
+                </div>
+            </div>
+
+            <div id="analytics" class="tab-content">
+                <div class="card">
+                    <div class="card-header"><span>Cloud Analytics</span></div>
+                    <div class="stat-grid">
+                        <div class="stat-box"><h4>Total Sessions</h4><p id="statSessions">0</p></div>
+                        <div class="stat-box"><h4>Total Hours</h4><p id="statHours">0.0</p></div>
+                        <div class="stat-box"><h4>Mean Focus</h4><p id="statFocus">0.0</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="punishments" class="tab-content">
+                <div class="card">
+                    <div class="card-header"><span style="color:var(--accent-red)">Punishment Record</span></div>
+                    <div id="punishmentList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- FIREBASE CONFIGURATION (INJECTED) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYWfRrydLqQwInIeGWZCyJVjKowybREqY",
+            authDomain: "jam-tracker-dc7e1.firebaseapp.com",
+            projectId: "jam-tracker-dc7e1",
+            storageBucket: "jam-tracker-dc7e1.firebasestorage.app",
+            messagingSenderId: "743450613367",
+            appId: "1:743450613367:web:531d60ae099cbaa3055872",
+            measurementId: "G-17Y7BTDSMQ"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let isPunchedIn = false;
+        let punchInTime = null;
+        let sessionTimer = null;
+        let totalMinutesToday = 0;
+        let targetHours = 7.5;
+        const punishmentsList = ["Donate ₹20 to charity", "No favorite food today", "Skip dessert tonight", "No entertainment for the evening"];
+
+        // --- AUTHENTICATION & EMAIL VERIFICATION ---
+        auth.onAuthStateChanged(user => {
+            const authSection = document.getElementById('authSection');
+            const appSection = document.getElementById('appSection');
+
+            if (user) {
+                if (!user.emailVerified) {
+                    alert("Please verify your email address. Check your inbox for the verification link.");
+                    auth.signOut();
+                    return;
+                }
+                currentUser = user;
+                authSection.style.display = "none";
+                appSection.style.display = "block";
+                initApp();
+            } else {
+                currentUser = null;
+                authSection.style.display = "block";
+                appSection.style.display = "none";
+                document.body.className = "idle-mode";
+            }
+        });
+
+        async function handleAuth(type) {
+            const email = document.getElementById('authEmail').value.trim();
+            const pass = document.getElementById('authPassword').value;
+            const msg = document.getElementById('authMsg');
+            msg.innerText = "";
+
+            try {
+                if (type === 'signup') {
+                    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+                    await cred.user.sendEmailVerification();
+                    alert("Verification email sent! Please verify your inbox before logging in.");
+                    auth.signOut();
+                } else {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                }
+            } catch (err) {
+                msg.innerText = err.message;
+            }
+        }
+
+        async function sendVerification() {
+            if (auth.currentUser) {
+                await auth.currentUser.sendEmailVerification();
+                alert("Verification link resent.");
+            } else {
+                alert("Log in first to request a verification email.");
+            }
+        }
+
+        // --- CORE APPLICATION LOGIC ---
+        function initApp() {
+            startClock();
+            setupDay();
+            syncCloudData();
+        }
+
+        function startClock() {
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                document.getElementById('liveDate').innerText = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            }, 1000);
+        }
+
+        function setupDay() {
+            const day = new Date().getDay();
+            const badge = document.getElementById('dayTypeBadge');
+            let tasksHTML = '';
+
+            if (day === 0 || day === 6) {
+                badge.innerText = "WEEKEND";
+                targetHours = 4.0;
+                tasksHTML = `
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 1 (Stats)</strong><br><small>09:30 AM – 11:00 AM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice</strong><br><small>11:15 AM – 12:15 PM (1.0 hr)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 2 (Stats)</strong><br><small>04:00 PM – 05:30 PM (1.5 hrs)</small></div></li>`;
+            } else if (day === 5) {
+                badge.innerText = "FRIDAY";
+                targetHours = 7.5;
+                tasksHTML = `
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 1 (Stats)</strong><br><small>09:30 AM – 11:00 AM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 1</strong><br><small>11:00 AM – 12:00 PM (1.0 hr)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 2 (Stats)</strong><br><small>02:00 PM – 03:30 PM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 3 (Stats)</strong><br><small>04:00 PM – 05:30 PM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 4 (Stats)</strong><br><small>06:00 PM – 07:00 PM (1.0 hr)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 2</strong><br><small>07:15 PM – 08:15 PM (1.0 hr)</small></div></li>`;
+            } else {
+                badge.innerText = "WEEKDAY";
+                targetHours = 7.5;
+                tasksHTML = `
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 1 (Stats)</strong><br><small>09:30 AM – 11:00 AM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 1</strong><br><small>11:15 AM – 12:15 PM (1.0 hr)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 2 (Stats)</strong><br><small>02:00 PM – 03:30 PM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 3 (Stats)</strong><br><small>04:00 PM – 05:30 PM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 4 (Stats)</strong><br><small>06:30 PM – 07:30 PM (1.0 hr)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 2</strong><br><small>07:45 PM – 08:45 PM (1.0 hr)</small></div></li>`;
+            }
+            document.getElementById('taskList').innerHTML = tasksHTML;
+            updateProgress();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function togglePunch() {
+            const btn = document.getElementById('punchBtn');
+            const status = document.getElementById('punchStatus');
+            const textSpan = document.getElementById('punchText');
+            const batLogo = document.getElementById('batLogo');
+
+            batLogo.classList.remove('bat-anim');
+            void batLogo.offsetWidth;
+            batLogo.classList.add('bat-anim');
+
+            if (!isPunchedIn) {
+                isPunchedIn = true;
+                punchInTime = new Date();
+                document.body.classList.remove('idle-mode');
+                textSpan.innerText = "PUNCH OUT";
+                btn.className = "punch-btn btn-out";
+                status.innerText = `running · 0m`;
+
+                sessionTimer = setInterval(() => {
+                    const diff = Math.floor((new Date() - punchInTime) / 60000);
+                    status.innerText = `running · ${diff}m`;
+                }, 60000);
+            } else {
+                isPunchedIn = false;
+                const punchOutTime = new Date();
+                clearInterval(sessionTimer);
+                document.body.classList.add('idle-mode');
+                textSpan.innerText = "PUNCH IN";
+                btn.className = "punch-btn btn-in";
+                status.innerText = `stopped`;
+
+                const sessionLength = Math.max(1, Math.round((punchOutTime - punchInTime) / 60000));
+                totalMinutesToday += sessionLength;
+
+                let focusScore = prompt(`You logged ${sessionLength} minutes! Rate your focus (1-10):`, "7");
+                focusScore = parseInt(focusScore);
+                if (isNaN(focusScore) || focusScore < 1 || focusScore > 10) focusScore = null;
+
+                await db.collection('users').doc(currentUser.uid).collection('sessions').add({
+                    date: new Date().toISOString(),
+                    minutes: sessionLength,
+                    focus: focusScore
+                });
+
+                updateProgress();
+            }
+        }
+
+        function updateProgress() {
+            const hoursLogged = (totalMinutesToday / 60).toFixed(1);
+            document.getElementById('hoursProgress').innerText = `${hoursLogged} / ${targetHours} hrs`;
+            const percentage = Math.min((hoursLogged / targetHours) * 100, 100);
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+        }
+
+        async function addDistraction(e) {
+            e.preventDefault();
+            const input = document.getElementById('distractionInput');
+            const text = input.value.trim();
+            if (text && currentUser) {
+                await db.collection('users').doc(currentUser.uid).collection('distractions').add({
+                    text: text,
+                    createdAt: new Date().toISOString()
+                });
+                input.value = '';
+            }
+        }
+
+        async function endDay() {
+            const checkboxes = document.querySelectorAll('.task-radio');
+            let allCompleted = true;
+            checkboxes.forEach(box => { if (!box.checked) allCompleted = false; });
+
+            const today = new Date().toLocaleDateString();
+
+            if (allCompleted) {
+                alert("Great job! All blocks ticked.");
+            } else {
+                const randomPunishment = punishmentsList[Math.floor(Math.random() * punishmentsList.length)];
+                alert("You missed some blocks! Punishment assigned:\n" + randomPunishment);
+                await db.collection('users').doc(currentUser.uid).collection('punishments').add({
+                    text: `[${today}] Missed blocks. Punishment: ${randomPunishment}`,
+                    createdAt: new Date().toISOString()
+                });
+            }
+            checkboxes.forEach(box => box.checked = false);
+            totalMinutesToday = 0;
+            updateProgress();
+        }
+
+        // --- REALTIME CLOUD LISTENERS ---
+        function syncCloudData() {
+            if (!currentUser) return;
+
+            // Sync Distractions
+            db.collection('users').doc(currentUser.uid).collection('distractions')
+                .orderBy('createdAt', 'desc')
+                .onSnapshot(snapshot => {
+                    const list = document.getElementById('distractionList');
+                    list.innerHTML = snapshot.docs.map(doc => `<li>${doc.data().text}</li>`).join('');
+                });
+
+            // Sync Punishments
+            db.collection('users').doc(currentUser.uid).collection('punishments')
+                .orderBy('createdAt', 'desc')
+                .onSnapshot(snapshot => {
+                    const list = document.getElementById('punishmentList');
+                    list.innerHTML = snapshot.docs.map(doc => `<div class="log-entry">${doc.data().text}</div>`).join('');
+                });
+
+            // Sync Analytics
+            db.collection('users').doc(currentUser.uid).collection('sessions')
+                .onSnapshot(snapshot => {
+                    let totalMins = 0;
+                    let focusSum = 0;
+                    let focusCount = 0;
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        totalMins += data.minutes || 0;
+                        if (data.focus !== null && data.focus !== undefined) {
+                            focusSum += data.focus;
+                            focusCount++;
+                        }
+                    });
+
+                    document.getElementById('statSessions').innerText = snapshot.size;
+                    document.getElementById('statHours').innerText = (totalMins / 60).toFixed(1);
+                    document.getElementById('statFocus').innerText = focusCount > 0 ? (focusSum / focusCount).toFixed(1) : "N/A";
+                });
+        }
+    </script>
+</body>
+</html>
