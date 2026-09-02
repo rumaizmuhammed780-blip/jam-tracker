@@ -179,7 +179,12 @@
                         <input type="text" id="distractionInput" class="distraction-input" placeholder="Enter a distracting thought..." autocomplete="off">
                         <button type="submit" class="distraction-btn">DUMP</button>
                     </form>
+                    
+                    <!-- THE NEW MOTIVATION MESSAGE BOX -->
+                    <div id="motivationMsg" style="color: var(--accent-green); font-size: 13px; font-style: italic; margin-bottom: 15px; min-height: 15px;"></div>
+                    
                     <ul class="distraction-list" id="distractionList"></ul>
+                    <button class="clear-btn" onclick="clearDistractions()" style="border-color: var(--text-muted); color: var(--text-muted)">Clear Dump</button>
                 </div>
 
                 <div class="card">
@@ -406,16 +411,37 @@
             document.getElementById('progressBar').style.width = `${percentage}%`;
         }
 
+        // --- UPDATED MOTIVATION ADD DISTRACTION LOGIC ---
         async function addDistraction(e) {
             e.preventDefault();
             const input = document.getElementById('distractionInput');
+            const msgBox = document.getElementById('motivationMsg');
             const text = input.value.trim();
+            const lowerText = text.toLowerCase();
+
             if (text && currentUser) {
+                // 1. Save to Cloud Database
                 await db.collection('users').doc(currentUser.uid).collection('distractions').add({
                     text: text,
                     createdAt: new Date().toISOString()
                 });
+                
+                // 2. Automated Motivation Keyword Scanner
+                if (lowerText.includes('sleep') || lowerText.includes('tired') || lowerText.includes('exhaust')) {
+                    msgBox.innerText = "Hang tight, bud! Stand up, stretch, and grab a quick glass of water.";
+                } else if (lowerText.includes('hard') || lowerText.includes('stuck') || lowerText.includes('confused')) {
+                    msgBox.innerText = "Take a deep breath. Break the problem down step by step. You've got this.";
+                } else if (lowerText.includes('phone') || lowerText.includes('reel') || lowerText.includes('youtube') || lowerText.includes('movie')) {
+                    msgBox.innerText = "Protect your focus! Save the screen time for a good Malayalam comedy tonight as a reward.";
+                } else {
+                    msgBox.innerText = "Thought dumped. Mind cleared. Back to the Batcomputer!";
+                }
+
+                // 3. Clear input and reset the message after 4 seconds
                 input.value = '';
+                setTimeout(() => {
+                    msgBox.innerText = "";
+                }, 4000);
             }
         }
 
@@ -481,6 +507,15 @@
                     document.getElementById('statHours').innerText = (totalMins / 60).toFixed(1);
                     document.getElementById('statFocus').innerText = focusCount > 0 ? (focusSum / focusCount).toFixed(1) : "N/A";
                 });
+        }
+        
+        async function clearDistractions() {
+            if(confirm("Clear all distractions?")) {
+                const snapshot = await db.collection('users').doc(currentUser.uid).collection('distractions').get();
+                snapshot.forEach(doc => {
+                    db.collection('users').doc(currentUser.uid).collection('distractions').doc(doc.id).delete();
+                });
+            }
         }
     </script>
 </body>
