@@ -35,39 +35,13 @@
 
         .container { width: 100%; max-width: 600px; }
 
-        /* Auth Screen */
         #authSection { display: block; margin-top: 50px; }
         #appSection { display: none; }
 
-        .auth-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 30px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .auth-card input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            border-radius: 4px;
-        }
-        .auth-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--accent-green);
-            color: #0a0a0c;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
+        .auth-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 30px; border-radius: 8px; text-align: center; }
+        .auth-card input { width: 100%; padding: 12px; margin: 10px 0; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 4px; }
+        .auth-btn { width: 100%; padding: 12px; background: var(--accent-green); color: #0a0a0c; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-        /* Header & Controls */
         .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
         .header-left h3 { color: var(--text-muted); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; }
         .header-left h1 { font-size: 36px; margin: 5px 0; font-weight: normal; }
@@ -75,13 +49,11 @@
         .badge { border: 1px solid var(--text-main); padding: 5px 10px; font-size: 12px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
         .logout-btn { background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red); padding: 5px 8px; font-size: 11px; cursor: pointer; border-radius: 4px; }
 
-        /* Idle Yellow Alert Mode */
         body.idle-mode { background-color: var(--accent-green); }
         body.idle-mode .header-left h3, body.idle-mode .header-left h1, body.idle-mode .header-left p, body.idle-mode .badge { color: #0a0a0c; border-color: #0a0a0c; }
         body.idle-mode .tab-btn { color: #333; border-color: rgba(0,0,0,0.3); }
         body.idle-mode .tab-btn.active { background: #0a0a0c; color: var(--accent-green); border-color: #0a0a0c; }
 
-        /* Tabs & Cards */
         .tabs { display: flex; gap: 5px; margin-bottom: 20px; }
         .tab-btn { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 12px; }
         .tab-btn.active { color: var(--text-main); border-color: var(--text-main); background: var(--tab-active); }
@@ -90,7 +62,6 @@
         .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .card-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
 
-        /* Punch Clock */
         .progress-bar { width: 100%; height: 8px; background: var(--border-color); border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--accent-green); width: 0%; transition: width 1s; }
         .punch-btn { width: 100%; padding: 15px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: background-color 0.5s ease; }
@@ -100,7 +71,6 @@
         @keyframes bat-flip { 0% { transform: rotateX(0deg); } 50% { transform: rotateX(180deg) scale(1.6); } 100% { transform: rotateX(360deg); } }
         .punch-status { text-align: center; margin-top: 10px; font-size: 12px; }
 
-        /* Distraction Dump & Blocks */
         .distraction-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
         .distraction-input { flex: 1; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 4px; }
         .distraction-btn { background: var(--border-color); color: var(--text-main); border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; }
@@ -111,7 +81,6 @@
         .task-radio { width: 20px; height: 20px; margin-right: 15px; cursor: pointer; }
         .end-day-btn { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); margin-top: 15px; cursor: pointer; }
 
-        /* Analytics */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .stat-box { background: var(--bg-color); padding: 15px; border: 1px solid var(--border-color); text-align: center; border-radius: 6px; }
         .stat-box p { font-size: 24px; font-weight: bold; color: var(--accent-green); }
@@ -221,7 +190,6 @@
     </div>
 
     <script>
-        // --- FIREBASE CONFIGURATION (INJECTED) ---
         const firebaseConfig = {
             apiKey: "AIzaSyAYWfRrydLqQwInIeGWZCyJVjKowybREqY",
             authDomain: "jam-tracker-dc7e1.firebaseapp.com",
@@ -242,9 +210,9 @@
         let sessionTimer = null;
         let totalMinutesToday = 0;
         let targetHours = 7.5;
+        let skipBoxSync = false; // Flag to prevent overwrite loop
         const punishmentsList = ["Donate ₹20 to charity", "No favorite food today", "Skip dessert tonight", "No entertainment for the evening"];
 
-        // --- AUTHENTICATION & EMAIL VERIFICATION ---
         auth.onAuthStateChanged(user => {
             const authSection = document.getElementById('authSection');
             const appSection = document.getElementById('appSection');
@@ -296,7 +264,6 @@
             }
         }
 
-        // --- CORE APPLICATION LOGIC ---
         function initApp() {
             startClock();
             setupDay();
@@ -346,10 +313,10 @@
             }
             document.getElementById('taskList').innerHTML = tasksHTML;
             
-            // --- NEW: Save Checkbox State to Cloud ---
-            document.querySelectorAll('.task-radio').forEach((box, index) => {
+            // Re-bind click events
+            document.querySelectorAll('.task-radio').forEach(box => {
                 box.addEventListener('change', async () => {
-                    if (!currentUser) return;
+                    if (!currentUser || skipBoxSync) return;
                     const todayStr = new Date().toDateString();
                     const boxesState = Array.from(document.querySelectorAll('.task-radio')).map(b => b.checked);
                     await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(todayStr).set({
@@ -379,14 +346,12 @@
             batLogo.classList.add('bat-anim');
 
             if (!isPunchedIn) {
-                // --- NEW: Save Running Timer to Cloud ---
                 const startTime = new Date().toISOString();
                 await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer').set({
                     isPunchedIn: true,
                     punchInTime: startTime
                 });
             } else {
-                // --- NEW: Clear Running Timer & Save Session ---
                 await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer').set({
                     isPunchedIn: false,
                     punchInTime: null
@@ -460,27 +425,25 @@
                 });
             }
             checkboxes.forEach(box => box.checked = false);
-            // Reset cloud blocks
             await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(new Date().toDateString()).set({ blocks: [] });
         }
 
-        // --- REALTIME CLOUD LISTENERS ---
         function syncCloudData() {
             if (!currentUser) return;
             const todayStr = new Date().toDateString();
 
-            // 1. Sync Checkboxes
             db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(todayStr)
                 .onSnapshot(doc => {
                     if (doc.exists && doc.data().blocks) {
+                        skipBoxSync = true; 
                         const checkboxes = document.querySelectorAll('.task-radio');
                         doc.data().blocks.forEach((isChecked, index) => {
                             if (checkboxes[index]) checkboxes[index].checked = isChecked;
                         });
+                        setTimeout(() => { skipBoxSync = false; }, 500); 
                     }
                 });
 
-            // 2. Sync Live Running Timer
             db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer')
                 .onSnapshot(doc => {
                     if (doc.exists) {
@@ -514,19 +477,17 @@
                     }
                 });
 
-            // 3. Sync Analytics & Restore Today's Progress Bar
             db.collection('users').doc(currentUser.uid).collection('sessions')
                 .onSnapshot(snapshot => {
                     let totalMins = 0;
                     let focusSum = 0;
                     let focusCount = 0;
-                    let todayMins = 0; // NEW: Track today's time
+                    let todayMins = 0;
 
                     snapshot.forEach(doc => {
                         const data = doc.data();
                         totalMins += data.minutes || 0;
                         
-                        // If this session happened today, add it to the progress bar
                         if (data.date && new Date(data.date).toDateString() === todayStr) {
                             todayMins += data.minutes || 0;
                         }
@@ -541,12 +502,10 @@
                     document.getElementById('statHours').innerText = (totalMins / 60).toFixed(1);
                     document.getElementById('statFocus').innerText = focusCount > 0 ? (focusSum / focusCount).toFixed(1) : "N/A";
                     
-                    // Update Today's bar
                     totalMinutesToday = todayMins;
                     updateProgress();
                 });
 
-            // 4. Sync Distractions
             db.collection('users').doc(currentUser.uid).collection('distractions')
                 .orderBy('createdAt', 'desc')
                 .onSnapshot(snapshot => {
@@ -554,7 +513,6 @@
                     list.innerHTML = snapshot.docs.map(doc => `<li>${doc.data().text}</li>`).join('');
                 });
 
-            // 5. Sync Punishments
             db.collection('users').doc(currentUser.uid).collection('punishments')
                 .orderBy('createdAt', 'desc')
                 .onSnapshot(snapshot => {
