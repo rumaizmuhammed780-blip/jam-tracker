@@ -108,7 +108,7 @@
         .distraction-list li { padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
         .distraction-list li::before { content: "› "; color: var(--accent-green); }
         .task-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
-        .task-radio { width: 20px; height: 20px; margin-right: 15px; }
+        .task-radio { width: 20px; height: 20px; margin-right: 15px; cursor: pointer; }
         .end-day-btn { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); margin-top: 15px; cursor: pointer; }
 
         /* Analytics */
@@ -180,7 +180,6 @@
                         <button type="submit" class="distraction-btn">DUMP</button>
                     </form>
                     
-                    <!-- THE NEW MOTIVATION MESSAGE BOX -->
                     <div id="motivationMsg" style="color: var(--accent-green); font-size: 13px; font-style: italic; margin-bottom: 15px; min-height: 15px;"></div>
                     
                     <ul class="distraction-list" id="distractionList"></ul>
@@ -346,6 +345,19 @@
                     <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 2</strong><br><small>07:45 PM – 08:45 PM (1.0 hr)</small></div></li>`;
             }
             document.getElementById('taskList').innerHTML = tasksHTML;
+            
+            // --- NEW: Save Checkbox State to Cloud ---
+            document.querySelectorAll('.task-radio').forEach((box, index) => {
+                box.addEventListener('change', async () => {
+                    if (!currentUser) return;
+                    const todayStr = new Date().toDateString();
+                    const boxesState = Array.from(document.querySelectorAll('.task-radio')).map(b => b.checked);
+                    await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(todayStr).set({
+                        blocks: boxesState
+                    }, { merge: true });
+                });
+            });
+
             updateProgress();
         }
 
@@ -367,29 +379,22 @@
             batLogo.classList.add('bat-anim');
 
             if (!isPunchedIn) {
-                isPunchedIn = true;
-                punchInTime = new Date();
-                document.body.classList.remove('idle-mode');
-                textSpan.innerText = "PUNCH OUT";
-                btn.className = "punch-btn btn-out";
-                status.innerText = `running · 0m`;
-
-                sessionTimer = setInterval(() => {
-                    const diff = Math.floor((new Date() - punchInTime) / 60000);
-                    status.innerText = `running · ${diff}m`;
-                }, 60000);
+                // --- NEW: Save Running Timer to Cloud ---
+                const startTime = new Date().toISOString();
+                await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer').set({
+                    isPunchedIn: true,
+                    punchInTime: startTime
+                });
             } else {
-                isPunchedIn = false;
+                // --- NEW: Clear Running Timer & Save Session ---
+                await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer').set({
+                    isPunchedIn: false,
+                    punchInTime: null
+                });
+
                 const punchOutTime = new Date();
-                clearInterval(sessionTimer);
-                document.body.classList.add('idle-mode');
-                textSpan.innerText = "PUNCH IN";
-                btn.className = "punch-btn btn-in";
-                status.innerText = `stopped`;
-
                 const sessionLength = Math.max(1, Math.round((punchOutTime - punchInTime) / 60000));
-                totalMinutesToday += sessionLength;
-
+                
                 let focusScore = prompt(`You logged ${sessionLength} minutes! Rate your focus (1-10):`, "7");
                 focusScore = parseInt(focusScore);
                 if (isNaN(focusScore) || focusScore < 1 || focusScore > 10) focusScore = null;
@@ -399,8 +404,6 @@
                     minutes: sessionLength,
                     focus: focusScore
                 });
-
-                updateProgress();
             }
         }
 
@@ -411,7 +414,6 @@
             document.getElementById('progressBar').style.width = `${percentage}%`;
         }
 
-        // --- UPDATED MOTIVATION ADD DISTRACTION LOGIC ---
         async function addDistraction(e) {
             e.preventDefault();
             const input = document.getElementById('distractionInput');
@@ -420,13 +422,11 @@
             const lowerText = text.toLowerCase();
 
             if (text && currentUser) {
-                // 1. Save to Cloud Database
                 await db.collection('users').doc(currentUser.uid).collection('distractions').add({
                     text: text,
                     createdAt: new Date().toISOString()
                 });
                 
-                // 2. Automated Motivation Keyword Scanner
                 if (lowerText.includes('sleep') || lowerText.includes('tired') || lowerText.includes('exhaust')) {
                     msgBox.innerText = "Hang tight, bud! Stand up, stretch, and grab a quick glass of water.";
                 } else if (lowerText.includes('hard') || lowerText.includes('stuck') || lowerText.includes('confused')) {
@@ -437,11 +437,8 @@
                     msgBox.innerText = "Thought dumped. Mind cleared. Back to the Batcomputer!";
                 }
 
-                // 3. Clear input and reset the message after 4 seconds
                 input.value = '';
-                setTimeout(() => {
-                    msgBox.innerText = "";
-                }, 4000);
+                setTimeout(() => { msgBox.innerText = ""; }, 4000);
             }
         }
 
@@ -463,40 +460,77 @@
                 });
             }
             checkboxes.forEach(box => box.checked = false);
-            totalMinutesToday = 0;
-            updateProgress();
+            // Reset cloud blocks
+            await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(new Date().toDateString()).set({ blocks: [] });
         }
 
         // --- REALTIME CLOUD LISTENERS ---
         function syncCloudData() {
             if (!currentUser) return;
+            const todayStr = new Date().toDateString();
 
-            // Sync Distractions
-            db.collection('users').doc(currentUser.uid).collection('distractions')
-                .orderBy('createdAt', 'desc')
-                .onSnapshot(snapshot => {
-                    const list = document.getElementById('distractionList');
-                    list.innerHTML = snapshot.docs.map(doc => `<li>${doc.data().text}</li>`).join('');
+            // 1. Sync Checkboxes
+            db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(todayStr)
+                .onSnapshot(doc => {
+                    if (doc.exists && doc.data().blocks) {
+                        const checkboxes = document.querySelectorAll('.task-radio');
+                        doc.data().blocks.forEach((isChecked, index) => {
+                            if (checkboxes[index]) checkboxes[index].checked = isChecked;
+                        });
+                    }
                 });
 
-            // Sync Punishments
-            db.collection('users').doc(currentUser.uid).collection('punishments')
-                .orderBy('createdAt', 'desc')
-                .onSnapshot(snapshot => {
-                    const list = document.getElementById('punishmentList');
-                    list.innerHTML = snapshot.docs.map(doc => `<div class="log-entry">${doc.data().text}</div>`).join('');
+            // 2. Sync Live Running Timer
+            db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer')
+                .onSnapshot(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const btn = document.getElementById('punchBtn');
+                        const status = document.getElementById('punchStatus');
+                        const textSpan = document.getElementById('punchText');
+
+                        if (data.isPunchedIn) {
+                            isPunchedIn = true;
+                            punchInTime = new Date(data.punchInTime);
+                            document.body.classList.remove('idle-mode');
+                            textSpan.innerText = "PUNCH OUT";
+                            btn.className = "punch-btn btn-out";
+                            
+                            clearInterval(sessionTimer);
+                            const updateTimer = () => {
+                                const diff = Math.floor((new Date() - punchInTime) / 60000);
+                                status.innerText = `running · ${diff}m`;
+                            };
+                            updateTimer();
+                            sessionTimer = setInterval(updateTimer, 60000);
+                        } else {
+                            isPunchedIn = false;
+                            clearInterval(sessionTimer);
+                            document.body.classList.add('idle-mode');
+                            textSpan.innerText = "PUNCH IN";
+                            btn.className = "punch-btn btn-in";
+                            status.innerText = `stopped`;
+                        }
+                    }
                 });
 
-            // Sync Analytics
+            // 3. Sync Analytics & Restore Today's Progress Bar
             db.collection('users').doc(currentUser.uid).collection('sessions')
                 .onSnapshot(snapshot => {
                     let totalMins = 0;
                     let focusSum = 0;
                     let focusCount = 0;
+                    let todayMins = 0; // NEW: Track today's time
 
                     snapshot.forEach(doc => {
                         const data = doc.data();
                         totalMins += data.minutes || 0;
+                        
+                        // If this session happened today, add it to the progress bar
+                        if (data.date && new Date(data.date).toDateString() === todayStr) {
+                            todayMins += data.minutes || 0;
+                        }
+
                         if (data.focus !== null && data.focus !== undefined) {
                             focusSum += data.focus;
                             focusCount++;
@@ -506,6 +540,26 @@
                     document.getElementById('statSessions').innerText = snapshot.size;
                     document.getElementById('statHours').innerText = (totalMins / 60).toFixed(1);
                     document.getElementById('statFocus').innerText = focusCount > 0 ? (focusSum / focusCount).toFixed(1) : "N/A";
+                    
+                    // Update Today's bar
+                    totalMinutesToday = todayMins;
+                    updateProgress();
+                });
+
+            // 4. Sync Distractions
+            db.collection('users').doc(currentUser.uid).collection('distractions')
+                .orderBy('createdAt', 'desc')
+                .onSnapshot(snapshot => {
+                    const list = document.getElementById('distractionList');
+                    list.innerHTML = snapshot.docs.map(doc => `<li>${doc.data().text}</li>`).join('');
+                });
+
+            // 5. Sync Punishments
+            db.collection('users').doc(currentUser.uid).collection('punishments')
+                .orderBy('createdAt', 'desc')
+                .onSnapshot(snapshot => {
+                    const list = document.getElementById('punishmentList');
+                    list.innerHTML = snapshot.docs.map(doc => `<div class="log-entry">${doc.data().text}</div>`).join('');
                 });
         }
         
