@@ -60,7 +60,7 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
 
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; display: flex; justify-content: center; transition: all 0.8s ease-in-out; min-height: 100vh; position: relative; overflow-x: hidden; perspective: 1000px; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; display: flex; justify-content: center; transition: all 0.8s ease-in-out; min-height: 100vh; position: relative; overflow-x: hidden; }
         .container { width: 100%; max-width: 600px; z-index: 1; }
 
         #authSection { display: block; margin-top: 50px; }
@@ -100,49 +100,34 @@
         .distraction-input { flex: 1; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 4px; }
         .distraction-btn { background: var(--border-color); color: var(--text-main); border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; }
         
-        /* --- 3D COMIC MOTIVATION POPUPS --- */
+        /* --- COMIC MOTIVATION POPUPS (Animations Removed, Relies on GIF/JPGs) --- */
         .comic-popup {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0.5);
+            transform: translate(-50%, -50%);
             z-index: 100;
             background: rgba(0,0,0,0.95);
             padding: 30px;
             border-radius: 15px;
             text-align: center;
             opacity: 0;
+            transition: all 0.4s ease-in-out;
             border: 5px solid;
             box-shadow: 0 20px 50px rgba(0,0,0,0.9);
             width: 90%;
             max-width: 400px;
         }
         
-        /* Extreme 3D Animation for the entire Popup Cards */
-        #batmanPopup.show { 
+        #batmanPopup.show, #jokerPopup.show { 
             display: block; 
             opacity: 1; 
-            animation: popup-batman-nod 0.8s infinite alternate ease-in-out;
-        }
-        @keyframes popup-batman-nod {
-            0% { transform: translate(-50%, -50%) scale(1) perspective(800px) rotateX(20deg); }
-            100% { transform: translate(-50%, -50%) scale(1.05) perspective(800px) rotateX(-10deg) translateY(-10px); }
-        }
-
-        #jokerPopup.show { 
-            display: block; 
-            opacity: 1; 
-            animation: popup-joker-laugh 0.15s infinite alternate ease-in-out;
-        }
-        @keyframes popup-joker-laugh {
-            0% { transform: translate(-50%, -50%) scale(1) perspective(800px) rotateY(-15deg) rotateX(5deg); }
-            100% { transform: translate(-50%, -50%) scale(1.1) perspective(800px) rotateY(15deg) rotateX(-5deg); }
         }
 
         .comic-popup img {
-            width: 160px;
-            height: 160px;
+            width: 180px;
+            height: 180px;
             object-fit: cover;
             border-radius: 50%;
             border: 5px solid white;
@@ -155,27 +140,6 @@
         #batmanPopup .comic-text { color: #39ff14; text-shadow: 3px 3px 0px #000; }
         #jokerPopup { border-color: #ff003c; }
         #jokerPopup .comic-text { color: #ff003c; font-family: 'Courier New', Courier, monospace; text-shadow: 3px 3px 0px #000; }
-
-        /* --- 3D ANIMATIONS FOR CALENDAR ICONS --- */
-        .perf-icon { position: absolute; top: 3px; left: 3px; width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.5); z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.8); }
-        
-        .cal-bat-anim {
-            animation: cal-bat-nod 0.8s infinite alternate ease-in-out;
-            transform-origin: bottom center;
-        }
-        @keyframes cal-bat-nod {
-            0% { transform: perspective(300px) rotateX(25deg) scale(1); }
-            100% { transform: perspective(300px) rotateX(-20deg) scale(1.3) translateY(-3px); }
-        }
-
-        .cal-joker-anim {
-            animation: cal-joker-laugh 0.12s infinite alternate ease-in-out;
-            transform-origin: center;
-        }
-        @keyframes cal-joker-laugh {
-            0% { transform: perspective(300px) rotateY(-35deg) scale(1.1) translateX(-3px); }
-            100% { transform: perspective(300px) rotateY(35deg) scale(1.4) translateX(3px); }
-        }
 
         .distraction-list { list-style: none; font-size: 13px; color: var(--text-muted); }
         .distraction-list li { padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
@@ -199,6 +163,8 @@
         .cal-day:hover { transform: scale(1.1); z-index: 10; border-color: var(--accent-green); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .cal-empty { border: none; cursor: default; }
         .cal-empty:hover { transform: none; box-shadow: none; border: none; }
+        
+        .perf-icon { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.3); z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.8); }
         
         .note-dot { position: absolute; bottom: 2px; left: 4px; font-size: 14px; }
 
@@ -224,14 +190,14 @@
 </head>
 <body class="idle-mode">
 
-    <!-- 3D OVERLAYS FOR MOTIVATION -->
+    <!-- OVERLAYS FOR MOTIVATION (Now using the animated jpgs) -->
     <div id="batmanPopup" class="comic-popup">
-        <img src="batman.png" id="batmanImg" alt="Batman"> 
+        <img src="Batman.jpg" id="batmanImg" alt="Batman"> 
         <div class="comic-text" id="batmanText"></div>
     </div>
     
     <div id="jokerPopup" class="comic-popup">
-        <img src="joker.png" id="jokerImg" alt="Joker"> 
+        <img src="Joker.jpg" id="jokerImg" alt="Joker"> 
         <div class="comic-text" id="jokerText"></div>
     </div>
 
@@ -535,11 +501,12 @@
                     const p = document.getElementById('jokerPopup');
                     const t = document.getElementById('jokerText');
                     
+                    // Switch to Joker 2 dynamically in February for the popup image
                     if (isJokerMonth) {
                         document.getElementById('jokerImg').src = 'joker2.png';
                         t.innerText = febJokerVault[Math.floor(Math.random() * febJokerVault.length)];
                     } else {
-                        document.getElementById('jokerImg').src = 'joker.png';
+                        document.getElementById('jokerImg').src = 'Joker.jpg'; // Uses your animated laughing joker
                         t.innerText = jokerVault[Math.floor(Math.random() * jokerVault.length)];
                     }
                     
@@ -548,7 +515,10 @@
                 } else {
                     const p = document.getElementById('batmanPopup');
                     const t = document.getElementById('batmanText');
+                    
+                    document.getElementById('batmanImg').src = 'Batman.jpg'; // Uses your animated thumbs up
                     t.innerText = batmanVault[Math.floor(Math.random() * batmanVault.length)];
+                    
                     p.classList.add('show');
                     setTimeout(() => { p.classList.remove('show'); }, 3500);
                 }
@@ -650,11 +620,10 @@
                     
                     const jokerIcon = isJokerMonth ? 'joker2.png' : 'joker.png';
                     
-                    // --- NEW: CSS 3D ANIMATION CLASSES APPENDED DIRECTLY TO CALENDAR ICONS ---
                     if (hours >= (dailyTarget * 0.5)) {
-                        perfIconHTML = `<img src="batman.png" onerror="this.style.display='none'" class="perf-icon cal-bat-anim" title="Goal Met: Batman Approved!" alt="Batman">`;
+                        perfIconHTML = `<img src="batman.png" onerror="this.style.display='none'" class="perf-icon" title="Goal Met: Batman Approved!" alt="Batman">`;
                     } else {
-                        perfIconHTML = `<img src="${jokerIcon}" onerror="this.style.display='none'" class="perf-icon cal-joker-anim" title="Slacking: The Joker is laughing at you" alt="Joker">`;
+                        perfIconHTML = `<img src="${jokerIcon}" onerror="this.style.display='none'" class="perf-icon" title="Slacking: The Joker is laughing at you" alt="Joker">`;
                     }
                 }
                 
@@ -703,6 +672,7 @@
             if (!currentUser) return;
             const todayStr = new Date().toDateString();
 
+            // SYNC ALL-TIME BLOCKS COMPLETED
             db.collection('users').doc(currentUser.uid).collection('dailyStatus').onSnapshot(snapshot => {
                 let allTimeBlocksChecked = 0;
                 
