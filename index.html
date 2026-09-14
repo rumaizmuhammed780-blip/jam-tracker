@@ -22,9 +22,23 @@
             --tab-active: #22252a;
         }
 
+        /* --- THE JOKER ENDGAME THEME (Triggered in Feb 2027) --- */
+        body.joker-mode {
+            --bg-color: #1a0b2e;
+            --card-bg: #2d1b4e;
+            --text-main: #e0d4f5;
+            --text-muted: #a78bfa;
+            --border-color: #4c1d95;
+            --accent-red: #ff003c;
+            --accent-red-hover: #cc0030;
+            --accent-green: #39ff14;
+            --accent-green-hover: #2ee600;
+            --tab-active: #3b0764;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
 
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; display: flex; justify-content: center; transition: background-color 0.8s ease-in-out; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; display: flex; justify-content: center; transition: all 0.8s ease-in-out; }
         .container { width: 100%; max-width: 600px; }
 
         #authSection { display: block; margin-top: 50px; }
@@ -46,11 +60,11 @@
         body.idle-mode .tab-btn.active { background: #0a0a0c; color: var(--accent-green); border-color: #0a0a0c; }
 
         .tabs { display: flex; gap: 5px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 12px; }
+        .tab-btn { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 12px; transition: background 0.3s; }
         .tab-btn.active { color: var(--text-main); border-color: var(--text-main); background: var(--tab-active); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: all 0.8s; }
         .card-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
 
         /* Punch Clock & Inputs */
@@ -82,12 +96,35 @@
         .calendar-controls button { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 5px 15px; cursor: pointer; border-radius: 4px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
         .cal-header-day { text-align: center; font-size: 11px; color: var(--text-muted); padding-bottom: 5px; }
-        .cal-day { aspect-ratio: 1; border: 1px solid var(--border-color); border-radius: 4px; display: flex; align-items: flex-start; justify-content: flex-end; padding: 5px; font-size: 12px; color: var(--text-muted); }
-        .cal-empty { border: none; }
+        
+        /* Calendar Days & Interactions */
+        .cal-day { position: relative; aspect-ratio: 1; border: 1px solid var(--border-color); border-radius: 4px; display: flex; align-items: flex-start; justify-content: flex-end; padding: 5px; font-size: 12px; color: var(--text-muted); cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+        .cal-day:hover { transform: scale(1.1); z-index: 10; border-color: var(--accent-green); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .cal-empty { border: none; cursor: default; }
+        .cal-empty:hover { transform: none; box-shadow: none; border: none; }
+        
         .level-1 { background: rgba(245, 199, 26, 0.2); color: white;}
         .level-2 { background: rgba(245, 199, 26, 0.5); color: white;}
         .level-3 { background: rgba(245, 199, 26, 0.8); color: black; font-weight: bold;}
         .level-4 { background: var(--accent-green); color: black; font-weight: bold;}
+        
+        .note-dot { position: absolute; bottom: 2px; left: 4px; font-size: 14px; }
+
+        /* Endgame Danger Day */
+        .danger-day {
+            background-color: #ff0000 !important;
+            color: #ffffff !important;
+            font-weight: 900 !important;
+            font-size: 16px !important;
+            border: 2px solid #ffffff !important;
+            animation: pulse-shake 0.8s infinite;
+        }
+        @keyframes pulse-shake {
+            0% { transform: scale(1) rotate(0deg); box-shadow: 0 0 10px #ff0000; }
+            25% { transform: scale(1.1) rotate(-3deg); box-shadow: 0 0 20px #ff0000; }
+            75% { transform: scale(1.1) rotate(3deg); box-shadow: 0 0 20px #ff0000; }
+            100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 10px #ff0000; }
+        }
     </style>
 </head>
 <body class="idle-mode">
@@ -165,14 +202,17 @@
                     <div class="card-header"><span>Monthly Progress Map</span></div>
                     <div class="calendar-controls">
                         <button onclick="changeMonth(-1)">&#8592; Prev</button>
-                        <h4 id="calMonthYearDisplay">Sept 2026</h4>
+                        <h4 id="calMonthYearDisplay" style="transition: color 0.5s;">Sept 2026</h4>
                         <button onclick="changeMonth(1)">Next &#8594;</button>
                     </div>
                     <div class="calendar-grid">
                         <div class="cal-header-day">Sun</div><div class="cal-header-day">Mon</div><div class="cal-header-day">Tue</div><div class="cal-header-day">Wed</div><div class="cal-header-day">Thu</div><div class="cal-header-day">Fri</div><div class="cal-header-day">Sat</div>
                     </div>
                     <div class="calendar-grid" id="calDaysGrid"></div>
-                    <p style="text-align:center; margin-top:15px; font-size:12px; color:var(--text-muted);">Darker green indicates more study hours logged.</p>
+                    <p style="text-align:center; margin-top:20px; font-size:12px; color:var(--text-muted);">
+                        Click any date to add or edit a target note. <br>
+                        Darker green indicates more study hours logged.
+                    </p>
                 </div>
             </div>
 
@@ -223,12 +263,12 @@
         let targetHours = 7.5;
         let skipBoxSync = false; 
         
-        let dailyTotalsMap = {}; // Stores total minutes per day for the calendar
-        let calCurrentDate = new Date(); // Tracks which month the calendar is showing
+        let dailyTotalsMap = {}; 
+        let calendarNotesMap = {}; // NEW: Stores custom calendar notes
+        let calCurrentDate = new Date(); 
 
         const punishmentsList = ["Donate ₹20 to charity", "No favorite food today", "Skip dessert tonight", "No entertainment for the evening"];
 
-        // ADVANCED MOTIVATION ENGINE
         const motivationVault = {
             sleepy: [
                 "Stand up, stretch, and grab a quick glass of water. Wake the system up.",
@@ -300,7 +340,6 @@
             }, 1000);
         }
 
-        // --- RESTORED: Exact dynamic daily schedules ---
         function setupDay() {
             const day = new Date().getDay();
             const badge = document.getElementById('dayTypeBadge');
@@ -336,7 +375,6 @@
             }
             document.getElementById('taskList').innerHTML = tasksHTML;
             
-            // Re-bind cloud sync for the checkboxes
             document.querySelectorAll('.task-radio').forEach(box => {
                 box.addEventListener('change', async () => {
                     if (!currentUser || skipBoxSync) return;
@@ -394,7 +432,6 @@
             if (text && currentUser) {
                 await db.collection('users').doc(currentUser.uid).collection('distractions').add({ text: text, createdAt: new Date().toISOString() });
                 
-                // Choose category and pick a random response
                 let category = 'general';
                 if (lowerText.includes('sleep') || lowerText.includes('tired') || lowerText.includes('exhaust')) category = 'sleepy';
                 else if (lowerText.includes('hard') || lowerText.includes('stuck') || lowerText.includes('confused') || lowerText.includes('stats')) category = 'stuck';
@@ -430,7 +467,25 @@
             await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(new Date().toDateString()).set({ blocks: [] });
         }
 
-        // --- CALENDAR LOGIC ---
+        // --- NEW: CALENDAR NOTE CLICK HANDLER ---
+        window.handleDayClick = async (y, m, d) => {
+            const dateStr = `${y}-${String(m+1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const existingNote = calendarNotesMap[dateStr] || "";
+            
+            const newNote = prompt(`Notes/Targets for ${dateStr}:`, existingNote);
+            
+            if (newNote !== null) {
+                if (newNote.trim() === "") {
+                    // Delete note if cleared
+                    await db.collection('users').doc(currentUser.uid).collection('calendarNotes').doc(dateStr).delete();
+                } else {
+                    // Save new note
+                    await db.collection('users').doc(currentUser.uid).collection('calendarNotes').doc(dateStr).set({ text: newNote });
+                }
+            }
+        };
+
+        // --- UPGRADED: CALENDAR LOGIC WITH JOKER THEME ---
         function changeMonth(dir) {
             calCurrentDate.setMonth(calCurrentDate.getMonth() + dir);
             renderCalendar();
@@ -445,6 +500,16 @@
             const year = calCurrentDate.getFullYear();
             display.innerText = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
             
+            // --- JOKER ENDGAME LOGIC ---
+            // month === 1 because JavaScript months are 0-indexed (Jan is 0, Feb is 1)
+            const isJokerMonth = (year === 2027 && month === 1);
+            if (isJokerMonth && !isPunchedIn) {
+                document.body.classList.add('joker-mode');
+                display.innerText = "THE ENDGAME - FEB 2027";
+            } else {
+                document.body.classList.remove('joker-mode');
+            }
+
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             
@@ -455,22 +520,34 @@
             
             // Actual days
             for (let i = 1; i <= daysInMonth; i++) {
-                // Format YYYY-MM-DD for mapping
                 const dString = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                
+                // Color Logic
                 const minutes = dailyTotalsMap[dString] || 0;
                 const hours = minutes / 60;
-                
                 let colorClass = '';
                 if (hours > 0 && hours <= 2) colorClass = 'level-1';
                 else if (hours > 2 && hours <= 5) colorClass = 'level-2';
                 else if (hours > 5 && hours <= 7) colorClass = 'level-3';
                 else if (hours > 7) colorClass = 'level-4';
                 
-                grid.innerHTML += `<div class="cal-day ${colorClass}" title="${hours.toFixed(1)} hrs">${i}</div>`;
+                // Note Indicator Logic
+                const existingNote = calendarNotesMap[dString];
+                const noteDotHTML = existingNote ? `<span class="note-dot" title="${existingNote}">📝</span>` : '';
+                
+                // Danger Day Logic (Feb 14, 2027)
+                const isDangerDay = (isJokerMonth && i === 14);
+                const dangerClass = isDangerDay ? 'danger-day' : '';
+                const displayContent = isDangerDay ? `${i}<br>🃏` : i;
+                const toolTip = existingNote ? existingNote : (isDangerDay ? 'IIT JAM EXAM DAY' : '');
+
+                grid.innerHTML += `<div class="cal-day ${colorClass} ${dangerClass}" title="${toolTip}" onclick="handleDayClick(${year}, ${month}, ${i})">
+                    ${displayContent}
+                    ${noteDotHTML}
+                </div>`;
             }
         }
 
-        // --- CSV EXPORT LOGIC ---
         async function exportDataToExcel() {
             if(!currentUser) return;
             alert("Fetching your cloud data. The download will start automatically.");
@@ -500,6 +577,7 @@
             if (!currentUser) return;
             const todayStr = new Date().toDateString();
 
+            // Sync Checkboxes
             db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(todayStr).onSnapshot(doc => {
                 if (doc.exists && doc.data().blocks) {
                     skipBoxSync = true; 
@@ -509,6 +587,7 @@
                 }
             });
 
+            // Sync Live Timer
             db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer').onSnapshot(doc => {
                 if (doc.exists) {
                     const data = doc.data();
@@ -519,7 +598,11 @@
                     if (data.isPunchedIn) {
                         isPunchedIn = true;
                         punchInTime = new Date(data.punchInTime);
+                        
+                        // Turn off Joker mode if timer is active so you can see clearly
+                        document.body.classList.remove('joker-mode');
                         document.body.classList.remove('idle-mode');
+                        
                         textSpan.innerText = "PUNCH OUT";
                         btn.className = "punch-btn btn-out";
                         clearInterval(sessionTimer);
@@ -529,7 +612,15 @@
                     } else {
                         isPunchedIn = false;
                         clearInterval(sessionTimer);
-                        document.body.classList.add('idle-mode');
+                        
+                        // Turn Joker Mode back on if we are in Feb 2027 and not punched in
+                        if (calCurrentDate.getFullYear() === 2027 && calCurrentDate.getMonth() === 1) {
+                            document.body.classList.remove('idle-mode');
+                            document.body.classList.add('joker-mode');
+                        } else {
+                            document.body.classList.add('idle-mode');
+                        }
+
                         textSpan.innerText = "PUNCH IN";
                         btn.className = "punch-btn btn-in";
                         status.innerText = `stopped`;
@@ -537,9 +628,10 @@
                 }
             });
 
+            // Sync Analytics & Calendar Hours
             db.collection('users').doc(currentUser.uid).collection('sessions').onSnapshot(snapshot => {
                 let totalMins = 0; let focusSum = 0; let focusCount = 0; let todayMins = 0;
-                dailyTotalsMap = {}; // Reset map for calendar
+                dailyTotalsMap = {}; 
 
                 snapshot.forEach(doc => {
                     const data = doc.data();
@@ -548,7 +640,6 @@
                     const sessionDate = new Date(data.date);
                     if (sessionDate.toDateString() === todayStr) todayMins += data.minutes || 0;
 
-                    // Build Calendar Map
                     const ymd = `${sessionDate.getFullYear()}-${String(sessionDate.getMonth()+1).padStart(2, '0')}-${String(sessionDate.getDate()).padStart(2, '0')}`;
                     if(!dailyTotalsMap[ymd]) dailyTotalsMap[ymd] = 0;
                     dailyTotalsMap[ymd] += data.minutes;
@@ -562,13 +653,24 @@
                 
                 totalMinutesToday = todayMins;
                 updateProgress();
-                renderCalendar(); // Update calendar colors in real-time
+                renderCalendar(); 
             });
 
+            // NEW: Sync Calendar Notes
+            db.collection('users').doc(currentUser.uid).collection('calendarNotes').onSnapshot(snapshot => {
+                calendarNotesMap = {};
+                snapshot.forEach(doc => {
+                    calendarNotesMap[doc.id] = doc.data().text;
+                });
+                renderCalendar();
+            });
+
+            // Sync Distractions
             db.collection('users').doc(currentUser.uid).collection('distractions').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
                 document.getElementById('distractionList').innerHTML = snapshot.docs.map(doc => `<li>${doc.data().text}</li>`).join('');
             });
 
+            // Sync Punishments
             db.collection('users').doc(currentUser.uid).collection('punishments').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
                 document.getElementById('punishmentList').innerHTML = snapshot.docs.map(doc => `<div class="log-entry">${doc.data().text}</div>`).join('');
             });
