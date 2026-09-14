@@ -24,20 +24,11 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            transition: background-color 0.8s ease-in-out;
-        }
-
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; display: flex; justify-content: center; transition: background-color 0.8s ease-in-out; }
         .container { width: 100%; max-width: 600px; }
 
         #authSection { display: block; margin-top: 50px; }
         #appSection { display: none; }
-
         .auth-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 30px; border-radius: 8px; text-align: center; }
         .auth-card input { width: 100%; padding: 12px; margin: 10px 0; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 4px; }
         .auth-btn { width: 100%; padding: 12px; background: var(--accent-green); color: #0a0a0c; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; }
@@ -62,15 +53,13 @@
         .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .card-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
 
+        /* Punch Clock & Inputs */
         .progress-bar { width: 100%; height: 8px; background: var(--border-color); border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--accent-green); width: 0%; transition: width 1s; }
         .punch-btn { width: 100%; padding: 15px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: background-color 0.5s ease; }
         .btn-in { background-color: var(--accent-green); color: #0a0a0c; }
         .btn-out { background-color: var(--accent-red); color: white; }
-        .bat-anim { animation: bat-flip 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes bat-flip { 0% { transform: rotateX(0deg); } 50% { transform: rotateX(180deg) scale(1.6); } 100% { transform: rotateX(360deg); } }
         .punch-status { text-align: center; margin-top: 10px; font-size: 12px; }
-
         .distraction-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
         .distraction-input { flex: 1; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 4px; }
         .distraction-btn { background: var(--border-color); color: var(--text-main); border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; }
@@ -81,20 +70,33 @@
         .task-radio { width: 20px; height: 20px; margin-right: 15px; cursor: pointer; }
         .end-day-btn { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); margin-top: 15px; cursor: pointer; }
 
+        /* Stats & Calendar Additions */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .stat-box { background: var(--bg-color); padding: 15px; border: 1px solid var(--border-color); text-align: center; border-radius: 6px; }
         .stat-box p { font-size: 24px; font-weight: bold; color: var(--accent-green); }
         .log-entry { padding: 10px 0; border-bottom: 1px dashed var(--border-color); font-size: 13px; }
         .punishment-text { color: var(--accent-red); font-weight: bold; }
+        .export-btn { width: 100%; padding: 12px; margin-top:15px; background: var(--text-muted); color: #0a0a0c; font-weight:bold; border: none; border-radius: 4px; cursor: pointer; }
+        
+        .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .calendar-controls button { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 5px 15px; cursor: pointer; border-radius: 4px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .cal-header-day { text-align: center; font-size: 11px; color: var(--text-muted); padding-bottom: 5px; }
+        .cal-day { aspect-ratio: 1; border: 1px solid var(--border-color); border-radius: 4px; display: flex; align-items: flex-start; justify-content: flex-end; padding: 5px; font-size: 12px; color: var(--text-muted); }
+        .cal-empty { border: none; }
+        .level-1 { background: rgba(245, 199, 26, 0.2); color: white;}
+        .level-2 { background: rgba(245, 199, 26, 0.5); color: white;}
+        .level-3 { background: rgba(245, 199, 26, 0.8); color: black; font-weight: bold;}
+        .level-4 { background: var(--accent-green); color: black; font-weight: bold;}
     </style>
 </head>
 <body class="idle-mode">
 
     <div class="container">
+        <!-- AUTH SECTION -->
         <div id="authSection">
             <div class="auth-card">
                 <h2 style="color:var(--accent-green); margin-bottom:15px;">BATCOMPUTER ACCESS</h2>
-                <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">Enter credentials to synchronize across devices</p>
                 <input type="email" id="authEmail" placeholder="Email Address">
                 <input type="password" id="authPassword" placeholder="Password">
                 <button class="auth-btn" onclick="handleAuth('login')">LOGIN</button>
@@ -104,6 +106,7 @@
             </div>
         </div>
 
+        <!-- MAIN DASHBOARD -->
         <div id="appSection">
             <div class="header">
                 <div class="header-left">
@@ -121,22 +124,18 @@
                 <button class="tab-btn active" onclick="switchTab('today')">⏱ TODAY</button>
                 <button class="tab-btn" onclick="switchTab('calendar')">📅 CALENDAR</button>
                 <button class="tab-btn" onclick="switchTab('analytics')">📊 ANALYTICS</button>
-                <button class="tab-btn" onclick="switchTab('punishments')">⚠️ PUNISHMENTS</button>
+                <button class="tab-btn" onclick="switchTab('punishments')">⚠️ LOGS</button>
             </div>
 
+            <!-- TODAY TAB -->
             <div id="today" class="tab-content active">
                 <div class="card">
                     <div class="card-header">
                         <span>Punch Clock</span>
                         <span id="hoursProgress">0.0 / 7.5 hrs</span>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressBar"></div>
-                    </div>
+                    <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
                     <button id="punchBtn" class="punch-btn btn-in" onclick="togglePunch()">
-                        <svg id="batLogo" viewBox="0 0 100 60" width="30" height="18" fill="currentColor">
-                            <path d="M 50 15 L 47 18 L 44 14 L 43 20 C 30 20 20 25 10 30 C 20 28 30 35 30 45 C 40 40 45 45 50 55 C 55 45 60 40 70 45 C 70 35 80 28 90 30 C 80 25 70 20 57 20 L 56 14 L 53 18 Z"></path>
-                        </svg>
                         <span id="punchText">PUNCH IN</span>
                     </button>
                     <div class="punch-status" id="punchStatus">stopped · 0m</div>
@@ -148,11 +147,9 @@
                         <input type="text" id="distractionInput" class="distraction-input" placeholder="Enter a distracting thought..." autocomplete="off">
                         <button type="submit" class="distraction-btn">DUMP</button>
                     </form>
-                    
                     <div id="motivationMsg" style="color: var(--accent-green); font-size: 13px; font-style: italic; margin-bottom: 15px; min-height: 15px;"></div>
-                    
                     <ul class="distraction-list" id="distractionList"></ul>
-                    <button class="clear-btn" onclick="clearDistractions()" style="border-color: var(--text-muted); color: var(--text-muted)">Clear Dump</button>
+                    <button class="clear-btn" onclick="clearDistractions()" style="border-color: var(--text-muted); color: var(--text-muted); background:transparent; padding:5px 10px; margin-top:10px; border-radius:4px;">Clear Dump</button>
                 </div>
 
                 <div class="card">
@@ -162,13 +159,24 @@
                 </div>
             </div>
 
+            <!-- CALENDAR TAB -->
             <div id="calendar" class="tab-content">
                 <div class="card">
-                    <div class="card-header"><span>Calendar</span></div>
-                    <p style="color:var(--text-muted); font-size:14px;">Cloud sync active. Calendar overview updating soon.</p>
+                    <div class="card-header"><span>Monthly Progress Map</span></div>
+                    <div class="calendar-controls">
+                        <button onclick="changeMonth(-1)">&#8592; Prev</button>
+                        <h4 id="calMonthYearDisplay">Sept 2026</h4>
+                        <button onclick="changeMonth(1)">Next &#8594;</button>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="cal-header-day">Sun</div><div class="cal-header-day">Mon</div><div class="cal-header-day">Tue</div><div class="cal-header-day">Wed</div><div class="cal-header-day">Thu</div><div class="cal-header-day">Fri</div><div class="cal-header-day">Sat</div>
+                    </div>
+                    <div class="calendar-grid" id="calDaysGrid"></div>
+                    <p style="text-align:center; margin-top:15px; font-size:12px; color:var(--text-muted);">Darker green indicates more study hours logged.</p>
                 </div>
             </div>
 
+            <!-- ANALYTICS TAB -->
             <div id="analytics" class="tab-content">
                 <div class="card">
                     <div class="card-header"><span>Cloud Analytics</span></div>
@@ -177,9 +185,11 @@
                         <div class="stat-box"><h4>Total Hours</h4><p id="statHours">0.0</p></div>
                         <div class="stat-box"><h4>Mean Focus</h4><p id="statFocus">0.0</p></div>
                     </div>
+                    <button class="export-btn" onclick="exportDataToExcel()">DOWNLOAD EXCEL DATA (CSV)</button>
                 </div>
             </div>
 
+            <!-- PUNISHMENTS TAB -->
             <div id="punishments" class="tab-content">
                 <div class="card">
                     <div class="card-header"><span style="color:var(--accent-red)">Punishment Record</span></div>
@@ -190,6 +200,7 @@
     </div>
 
     <script>
+        // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyAYWfRrydLqQwInIeGWZCyJVjKowybREqY",
             authDomain: "jam-tracker-dc7e1.firebaseapp.com",
@@ -210,27 +221,48 @@
         let sessionTimer = null;
         let totalMinutesToday = 0;
         let targetHours = 7.5;
-        let skipBoxSync = false; // Flag to prevent overwrite loop
+        let skipBoxSync = false; 
+        
+        let dailyTotalsMap = {}; // Stores total minutes per day for the calendar
+        let calCurrentDate = new Date(); // Tracks which month the calendar is showing
+
         const punishmentsList = ["Donate ₹20 to charity", "No favorite food today", "Skip dessert tonight", "No entertainment for the evening"];
 
-        auth.onAuthStateChanged(user => {
-            const authSection = document.getElementById('authSection');
-            const appSection = document.getElementById('appSection');
+        // ADVANCED MOTIVATION ENGINE
+        const motivationVault = {
+            sleepy: [
+                "Stand up, stretch, and grab a quick glass of water. Wake the system up.",
+                "Oxygen beats caffeine. Do 10 jumping jacks right now.",
+                "Fatigue is temporary. Splash some cold water on your face. You've got this."
+            ],
+            stuck: [
+                "Mathematical Statistics is tough, but so are you. Take a deep breath.",
+                "Every wrong attempt is one step closer to the right one. Keep digging.",
+                "Don't let one problem derail you. Break it down to fundamentals."
+            ],
+            distracted: [
+                "Protect your focus! Save the screen time for a good Malayalam comedy tonight as a reward.",
+                "Put the phone out of arm's reach. Your future self will thank you.",
+                "The Batcomputer demands absolute focus. Close the tabs and get back in the zone."
+            ],
+            general: [
+                "Thought dumped. Mind cleared. Back to the mission.",
+                "Acknowledged. Now let it go and focus on the next block.",
+                "Clear space, clear mind. Keep pushing forward."
+            ]
+        };
 
+        auth.onAuthStateChanged(user => {
             if (user) {
-                if (!user.emailVerified) {
-                    alert("Please verify your email address. Check your inbox for the verification link.");
-                    auth.signOut();
-                    return;
-                }
+                if (!user.emailVerified) { alert("Please verify your email."); auth.signOut(); return; }
                 currentUser = user;
-                authSection.style.display = "none";
-                appSection.style.display = "block";
+                document.getElementById('authSection').style.display = "none";
+                document.getElementById('appSection').style.display = "block";
                 initApp();
             } else {
                 currentUser = null;
-                authSection.style.display = "block";
-                appSection.style.display = "none";
+                document.getElementById('authSection').style.display = "block";
+                document.getElementById('appSection').style.display = "none";
                 document.body.className = "idle-mode";
             }
         });
@@ -240,28 +272,18 @@
             const pass = document.getElementById('authPassword').value;
             const msg = document.getElementById('authMsg');
             msg.innerText = "";
-
             try {
                 if (type === 'signup') {
                     const cred = await auth.createUserWithEmailAndPassword(email, pass);
                     await cred.user.sendEmailVerification();
-                    alert("Verification email sent! Please verify your inbox before logging in.");
+                    alert("Verification email sent!");
                     auth.signOut();
-                } else {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                }
-            } catch (err) {
-                msg.innerText = err.message;
-            }
+                } else { await auth.signInWithEmailAndPassword(email, pass); }
+            } catch (err) { msg.innerText = err.message; }
         }
 
         async function sendVerification() {
-            if (auth.currentUser) {
-                await auth.currentUser.sendEmailVerification();
-                alert("Verification link resent.");
-            } else {
-                alert("Log in first to request a verification email.");
-            }
+            if (auth.currentUser) { await auth.currentUser.sendEmailVerification(); alert("Link resent."); }
         }
 
         function initApp() {
@@ -282,49 +304,25 @@
             const day = new Date().getDay();
             const badge = document.getElementById('dayTypeBadge');
             let tasksHTML = '';
-
-            if (day === 0 || day === 6) {
-                badge.innerText = "WEEKEND";
-                targetHours = 4.0;
-                tasksHTML = `
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 1 (Stats)</strong><br><small>09:30 AM – 11:00 AM (1.5 hrs)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice</strong><br><small>11:15 AM – 12:15 PM (1.0 hr)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 2 (Stats)</strong><br><small>04:00 PM – 05:30 PM (1.5 hrs)</small></div></li>`;
-            } else if (day === 5) {
-                badge.innerText = "FRIDAY";
-                targetHours = 7.5;
-                tasksHTML = `
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 1 (Stats)</strong><br><small>09:30 AM – 11:00 AM (1.5 hrs)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 1</strong><br><small>11:00 AM – 12:00 PM (1.0 hr)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 2 (Stats)</strong><br><small>02:00 PM – 03:30 PM (1.5 hrs)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 3 (Stats)</strong><br><small>04:00 PM – 05:30 PM (1.5 hrs)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 4 (Stats)</strong><br><small>06:00 PM – 07:00 PM (1.0 hr)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 2</strong><br><small>07:15 PM – 08:15 PM (1.0 hr)</small></div></li>`;
-            } else {
-                badge.innerText = "WEEKDAY";
-                targetHours = 7.5;
-                tasksHTML = `
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 1 (Stats)</strong><br><small>09:30 AM – 11:00 AM (1.5 hrs)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 1</strong><br><small>11:15 AM – 12:15 PM (1.0 hr)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 2 (Stats)</strong><br><small>02:00 PM – 03:30 PM (1.5 hrs)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 3 (Stats)</strong><br><small>04:00 PM – 05:30 PM (1.5 hrs)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 4 (Stats)</strong><br><small>06:30 PM – 07:30 PM (1.0 hr)</small></div></li>
-                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 2</strong><br><small>07:45 PM – 08:45 PM (1.0 hr)</small></div></li>`;
-            }
+            targetHours = (day === 0 || day === 6) ? 4.0 : 7.5;
+            badge.innerText = (day === 0 || day === 6) ? "WEEKEND" : (day === 5 ? "FRIDAY" : "WEEKDAY");
+            
+            tasksHTML = `
+                <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 1 (Stats)</strong><br><small>1.5 hrs</small></div></li>
+                <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python/Code Practice</strong><br><small>1.0 hr</small></div></li>
+                <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 2 (Stats)</strong><br><small>1.5 hrs</small></div></li>
+                <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 3 (Review)</strong><br><small>1.5 hrs</small></div></li>`;
+            
             document.getElementById('taskList').innerHTML = tasksHTML;
             
-            // Re-bind click events
             document.querySelectorAll('.task-radio').forEach(box => {
                 box.addEventListener('change', async () => {
                     if (!currentUser || skipBoxSync) return;
                     const todayStr = new Date().toDateString();
                     const boxesState = Array.from(document.querySelectorAll('.task-radio')).map(b => b.checked);
-                    await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(todayStr).set({
-                        blocks: boxesState
-                    }, { merge: true });
+                    await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(todayStr).set({ blocks: boxesState }, { merge: true });
                 });
             });
-
             updateProgress();
         }
 
@@ -333,33 +331,19 @@
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
+            if(tabId === 'calendar') renderCalendar();
         }
 
         async function togglePunch() {
             const btn = document.getElementById('punchBtn');
             const status = document.getElementById('punchStatus');
             const textSpan = document.getElementById('punchText');
-            const batLogo = document.getElementById('batLogo');
-
-            batLogo.classList.remove('bat-anim');
-            void batLogo.offsetWidth;
-            batLogo.classList.add('bat-anim');
 
             if (!isPunchedIn) {
-                const startTime = new Date().toISOString();
-                await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer').set({
-                    isPunchedIn: true,
-                    punchInTime: startTime
-                });
+                await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer').set({ isPunchedIn: true, punchInTime: new Date().toISOString() });
             } else {
-                await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer').set({
-                    isPunchedIn: false,
-                    punchInTime: null
-                });
-
-                const punchOutTime = new Date();
-                const sessionLength = Math.max(1, Math.round((punchOutTime - punchInTime) / 60000));
-                
+                await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer').set({ isPunchedIn: false, punchInTime: null });
+                const sessionLength = Math.max(1, Math.round((new Date() - punchInTime) / 60000));
                 let focusScore = prompt(`You logged ${sessionLength} minutes! Rate your focus (1-10):`, "7");
                 focusScore = parseInt(focusScore);
                 if (isNaN(focusScore) || focusScore < 1 || focusScore > 10) focusScore = null;
@@ -375,8 +359,7 @@
         function updateProgress() {
             const hoursLogged = (totalMinutesToday / 60).toFixed(1);
             document.getElementById('hoursProgress').innerText = `${hoursLogged} / ${targetHours} hrs`;
-            const percentage = Math.min((hoursLogged / targetHours) * 100, 100);
-            document.getElementById('progressBar').style.width = `${percentage}%`;
+            document.getElementById('progressBar').style.width = `${Math.min((hoursLogged / targetHours) * 100, 100)}%`;
         }
 
         async function addDistraction(e) {
@@ -387,23 +370,26 @@
             const lowerText = text.toLowerCase();
 
             if (text && currentUser) {
-                await db.collection('users').doc(currentUser.uid).collection('distractions').add({
-                    text: text,
-                    createdAt: new Date().toISOString()
-                });
+                await db.collection('users').doc(currentUser.uid).collection('distractions').add({ text: text, createdAt: new Date().toISOString() });
                 
-                if (lowerText.includes('sleep') || lowerText.includes('tired') || lowerText.includes('exhaust')) {
-                    msgBox.innerText = "Hang tight, bud! Stand up, stretch, and grab a quick glass of water.";
-                } else if (lowerText.includes('hard') || lowerText.includes('stuck') || lowerText.includes('confused')) {
-                    msgBox.innerText = "Take a deep breath. Break the problem down step by step. You've got this.";
-                } else if (lowerText.includes('phone') || lowerText.includes('reel') || lowerText.includes('youtube') || lowerText.includes('movie')) {
-                    msgBox.innerText = "Protect your focus! Save the screen time for a good Malayalam comedy tonight as a reward.";
-                } else {
-                    msgBox.innerText = "Thought dumped. Mind cleared. Back to the Batcomputer!";
-                }
+                // Choose category and pick a random response
+                let category = 'general';
+                if (lowerText.includes('sleep') || lowerText.includes('tired') || lowerText.includes('exhaust')) category = 'sleepy';
+                else if (lowerText.includes('hard') || lowerText.includes('stuck') || lowerText.includes('confused') || lowerText.includes('stats')) category = 'stuck';
+                else if (lowerText.includes('phone') || lowerText.includes('reel') || lowerText.includes('youtube') || lowerText.includes('movie')) category = 'distracted';
+                
+                const responseArray = motivationVault[category];
+                msgBox.innerText = responseArray[Math.floor(Math.random() * responseArray.length)];
 
                 input.value = '';
-                setTimeout(() => { msgBox.innerText = ""; }, 4000);
+                setTimeout(() => { msgBox.innerText = ""; }, 4500);
+            }
+        }
+
+        async function clearDistractions() {
+            if(confirm("Clear all distractions?")) {
+                const snapshot = await db.collection('users').doc(currentUser.uid).collection('distractions').get();
+                snapshot.forEach(doc => { db.collection('users').doc(currentUser.uid).collection('distractions').doc(doc.id).delete(); });
             }
         }
 
@@ -411,123 +397,159 @@
             const checkboxes = document.querySelectorAll('.task-radio');
             let allCompleted = true;
             checkboxes.forEach(box => { if (!box.checked) allCompleted = false; });
-
             const today = new Date().toLocaleDateString();
-
-            if (allCompleted) {
-                alert("Great job! All blocks ticked.");
-            } else {
+            if (allCompleted) { alert("Great job! All blocks ticked."); } 
+            else {
                 const randomPunishment = punishmentsList[Math.floor(Math.random() * punishmentsList.length)];
-                alert("You missed some blocks! Punishment assigned:\n" + randomPunishment);
-                await db.collection('users').doc(currentUser.uid).collection('punishments').add({
-                    text: `[${today}] Missed blocks. Punishment: ${randomPunishment}`,
-                    createdAt: new Date().toISOString()
-                });
+                alert("You missed some blocks! Punishment:\n" + randomPunishment);
+                await db.collection('users').doc(currentUser.uid).collection('punishments').add({ text: `[${today}] Punishment: ${randomPunishment}`, createdAt: new Date().toISOString() });
             }
             checkboxes.forEach(box => box.checked = false);
             await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(new Date().toDateString()).set({ blocks: [] });
+        }
+
+        // --- NEW: CALENDAR LOGIC ---
+        function changeMonth(dir) {
+            calCurrentDate.setMonth(calCurrentDate.getMonth() + dir);
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calDaysGrid');
+            const display = document.getElementById('calMonthYearDisplay');
+            grid.innerHTML = '';
+            
+            const month = calCurrentDate.getMonth();
+            const year = calCurrentDate.getFullYear();
+            display.innerText = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Empty slots before 1st day
+            for (let i = 0; i < firstDay; i++) {
+                grid.innerHTML += `<div class="cal-day cal-empty"></div>`;
+            }
+            
+            // Actual days
+            for (let i = 1; i <= daysInMonth; i++) {
+                // Format YYYY-MM-DD for mapping
+                const dString = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                const minutes = dailyTotalsMap[dString] || 0;
+                const hours = minutes / 60;
+                
+                let colorClass = '';
+                if (hours > 0 && hours <= 2) colorClass = 'level-1';
+                else if (hours > 2 && hours <= 5) colorClass = 'level-2';
+                else if (hours > 5 && hours <= 7) colorClass = 'level-3';
+                else if (hours > 7) colorClass = 'level-4';
+                
+                grid.innerHTML += `<div class="cal-day ${colorClass}" title="${hours.toFixed(1)} hrs">${i}</div>`;
+            }
+        }
+
+        // --- NEW: CSV EXPORT LOGIC ---
+        async function exportDataToExcel() {
+            if(!currentUser) return;
+            alert("Fetching your cloud data. The download will start automatically.");
+            const snapshot = await db.collection('users').doc(currentUser.uid).collection('sessions').orderBy('date', 'desc').get();
+            
+            let csvContent = "data:text/csv;charset=utf-8,Date,Time,Duration (Minutes),Focus Score\n";
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const dateObj = new Date(data.date);
+                const d = dateObj.toLocaleDateString('en-GB');
+                const t = dateObj.toLocaleTimeString('en-GB');
+                const focus = data.focus ? data.focus : "N/A";
+                csvContent += `${d},${t},${data.minutes},${focus}\n`;
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "IIT_JAM_Analytics.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function syncCloudData() {
             if (!currentUser) return;
             const todayStr = new Date().toDateString();
 
-            db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(todayStr)
-                .onSnapshot(doc => {
-                    if (doc.exists && doc.data().blocks) {
-                        skipBoxSync = true; 
-                        const checkboxes = document.querySelectorAll('.task-radio');
-                        doc.data().blocks.forEach((isChecked, index) => {
-                            if (checkboxes[index]) checkboxes[index].checked = isChecked;
-                        });
-                        setTimeout(() => { skipBoxSync = false; }, 500); 
+            db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(todayStr).onSnapshot(doc => {
+                if (doc.exists && doc.data().blocks) {
+                    skipBoxSync = true; 
+                    const checkboxes = document.querySelectorAll('.task-radio');
+                    doc.data().blocks.forEach((isChecked, i) => { if (checkboxes[i]) checkboxes[i].checked = isChecked; });
+                    setTimeout(() => { skipBoxSync = false; }, 500); 
+                }
+            });
+
+            db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer').onSnapshot(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    const btn = document.getElementById('punchBtn');
+                    const status = document.getElementById('punchStatus');
+                    const textSpan = document.getElementById('punchText');
+
+                    if (data.isPunchedIn) {
+                        isPunchedIn = true;
+                        punchInTime = new Date(data.punchInTime);
+                        document.body.classList.remove('idle-mode');
+                        textSpan.innerText = "PUNCH OUT";
+                        btn.className = "punch-btn btn-out";
+                        clearInterval(sessionTimer);
+                        const updateTimer = () => { status.innerText = `running · ${Math.floor((new Date() - punchInTime) / 60000)}m`; };
+                        updateTimer();
+                        sessionTimer = setInterval(updateTimer, 60000);
+                    } else {
+                        isPunchedIn = false;
+                        clearInterval(sessionTimer);
+                        document.body.classList.add('idle-mode');
+                        textSpan.innerText = "PUNCH IN";
+                        btn.className = "punch-btn btn-in";
+                        status.innerText = `stopped`;
                     }
-                });
+                }
+            });
 
-            db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer')
-                .onSnapshot(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        const btn = document.getElementById('punchBtn');
-                        const status = document.getElementById('punchStatus');
-                        const textSpan = document.getElementById('punchText');
+            db.collection('users').doc(currentUser.uid).collection('sessions').onSnapshot(snapshot => {
+                let totalMins = 0; let focusSum = 0; let focusCount = 0; let todayMins = 0;
+                dailyTotalsMap = {}; // Reset map for calendar
 
-                        if (data.isPunchedIn) {
-                            isPunchedIn = true;
-                            punchInTime = new Date(data.punchInTime);
-                            document.body.classList.remove('idle-mode');
-                            textSpan.innerText = "PUNCH OUT";
-                            btn.className = "punch-btn btn-out";
-                            
-                            clearInterval(sessionTimer);
-                            const updateTimer = () => {
-                                const diff = Math.floor((new Date() - punchInTime) / 60000);
-                                status.innerText = `running · ${diff}m`;
-                            };
-                            updateTimer();
-                            sessionTimer = setInterval(updateTimer, 60000);
-                        } else {
-                            isPunchedIn = false;
-                            clearInterval(sessionTimer);
-                            document.body.classList.add('idle-mode');
-                            textSpan.innerText = "PUNCH IN";
-                            btn.className = "punch-btn btn-in";
-                            status.innerText = `stopped`;
-                        }
-                    }
-                });
-
-            db.collection('users').doc(currentUser.uid).collection('sessions')
-                .onSnapshot(snapshot => {
-                    let totalMins = 0;
-                    let focusSum = 0;
-                    let focusCount = 0;
-                    let todayMins = 0;
-
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        totalMins += data.minutes || 0;
-                        
-                        if (data.date && new Date(data.date).toDateString() === todayStr) {
-                            todayMins += data.minutes || 0;
-                        }
-
-                        if (data.focus !== null && data.focus !== undefined) {
-                            focusSum += data.focus;
-                            focusCount++;
-                        }
-                    });
-
-                    document.getElementById('statSessions').innerText = snapshot.size;
-                    document.getElementById('statHours').innerText = (totalMins / 60).toFixed(1);
-                    document.getElementById('statFocus').innerText = focusCount > 0 ? (focusSum / focusCount).toFixed(1) : "N/A";
-                    
-                    totalMinutesToday = todayMins;
-                    updateProgress();
-                });
-
-            db.collection('users').doc(currentUser.uid).collection('distractions')
-                .orderBy('createdAt', 'desc')
-                .onSnapshot(snapshot => {
-                    const list = document.getElementById('distractionList');
-                    list.innerHTML = snapshot.docs.map(doc => `<li>${doc.data().text}</li>`).join('');
-                });
-
-            db.collection('users').doc(currentUser.uid).collection('punishments')
-                .orderBy('createdAt', 'desc')
-                .onSnapshot(snapshot => {
-                    const list = document.getElementById('punishmentList');
-                    list.innerHTML = snapshot.docs.map(doc => `<div class="log-entry">${doc.data().text}</div>`).join('');
-                });
-        }
-        
-        async function clearDistractions() {
-            if(confirm("Clear all distractions?")) {
-                const snapshot = await db.collection('users').doc(currentUser.uid).collection('distractions').get();
                 snapshot.forEach(doc => {
-                    db.collection('users').doc(currentUser.uid).collection('distractions').doc(doc.id).delete();
+                    const data = doc.data();
+                    totalMins += data.minutes || 0;
+                    
+                    const sessionDate = new Date(data.date);
+                    if (sessionDate.toDateString() === todayStr) todayMins += data.minutes || 0;
+
+                    // Build Calendar Map
+                    const ymd = `${sessionDate.getFullYear()}-${String(sessionDate.getMonth()+1).padStart(2, '0')}-${String(sessionDate.getDate()).padStart(2, '0')}`;
+                    if(!dailyTotalsMap[ymd]) dailyTotalsMap[ymd] = 0;
+                    dailyTotalsMap[ymd] += data.minutes;
+
+                    if (data.focus !== null && data.focus !== undefined) { focusSum += data.focus; focusCount++; }
                 });
-            }
+
+                document.getElementById('statSessions').innerText = snapshot.size;
+                document.getElementById('statHours').innerText = (totalMins / 60).toFixed(1);
+                document.getElementById('statFocus').innerText = focusCount > 0 ? (focusSum / focusCount).toFixed(1) : "N/A";
+                
+                totalMinutesToday = todayMins;
+                updateProgress();
+                renderCalendar(); // Update calendar colors in real-time
+            });
+
+            db.collection('users').doc(currentUser.uid).collection('distractions').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+                document.getElementById('distractionList').innerHTML = snapshot.docs.map(doc => `<li>${doc.data().text}</li>`).join('');
+            });
+
+            db.collection('users').doc(currentUser.uid).collection('punishments').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+                document.getElementById('punishmentList').innerHTML = snapshot.docs.map(doc => `<div class="log-entry">${doc.data().text}</div>`).join('');
+            });
         }
     </script>
 </body>
