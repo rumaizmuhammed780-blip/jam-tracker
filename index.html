@@ -37,12 +37,17 @@
         }
         
         /* Floating Joker Background Watermark */
-        body.joker-mode::after {
-            content: "🤡";
+        body.joker-mode::before {
+            content: "";
             position: fixed;
             bottom: -40px;
-            right: -20px;
-            font-size: 350px;
+            right: -40px;
+            width: 450px;
+            height: 450px;
+            background-image: url('joker2.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: bottom right;
             opacity: 0.15;
             z-index: -1;
             animation: float-joker 5s ease-in-out infinite;
@@ -55,7 +60,7 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
 
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; display: flex; justify-content: center; transition: all 0.8s ease-in-out; min-height: 100vh; position: relative; overflow-x: hidden; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; display: flex; justify-content: center; transition: all 0.8s ease-in-out; min-height: 100vh; position: relative; overflow-x: hidden; perspective: 1000px; }
         .container { width: 100%; max-width: 600px; z-index: 1; }
 
         #authSection { display: block; margin-top: 50px; }
@@ -84,7 +89,6 @@
         .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: all 0.8s; }
         .card-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
 
-        /* Punch Clock & Inputs */
         .progress-bar { width: 100%; height: 8px; background: var(--border-color); border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--accent-green); width: 0%; transition: width 1s; }
         .punch-btn { width: 100%; padding: 15px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: background-color 0.5s ease; }
@@ -96,7 +100,7 @@
         .distraction-input { flex: 1; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 4px; }
         .distraction-btn { background: var(--border-color); color: var(--text-main); border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; }
         
-        /* Comic Motivation Popups */
+        /* --- 3D COMIC MOTIVATION POPUPS --- */
         .comic-popup {
             display: none;
             position: fixed;
@@ -104,47 +108,51 @@
             left: 50%;
             transform: translate(-50%, -50%) scale(0.5);
             z-index: 100;
-            background: rgba(0,0,0,0.9);
-            padding: 20px;
+            background: rgba(0,0,0,0.95);
+            padding: 30px;
             border-radius: 15px;
             text-align: center;
             opacity: 0;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 4px solid;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 5px solid;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
             width: 90%;
             max-width: 400px;
         }
-        .comic-popup.show {
-            display: block;
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
+        
+        /* 3D Transform Effects when shown */
+        #batmanPopup.show { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1) perspective(800px) rotateX(15deg); }
+        #jokerPopup.show { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1.05) perspective(800px) rotateY(-15deg); }
+
         .comic-popup img {
-            width: 150px;
-            height: 150px;
+            width: 160px;
+            height: 160px;
             object-fit: cover;
             border-radius: 50%;
-            border: 4px solid white;
-            margin-bottom: 15px;
-            animation: float-bat 2s infinite ease-in-out;
+            border: 5px solid white;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
-        .comic-text {
-            font-size: 22px;
-            font-weight: 900;
-            font-style: italic;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            line-height: 1.3;
-        }
-
-        #batmanPopup { border-color: #39ff14; }
-        #batmanPopup .comic-text { color: #39ff14; text-shadow: 2px 2px 0px #000; }
         
-        #jokerPopup { border-color: #ff003c; }
-        #jokerPopup .comic-text { color: #ff003c; font-family: 'Courier New', Courier, monospace; text-shadow: 2px 2px 0px #000; }
+        /* Batman Thumbs Up / Bounce Animation */
+        .bat-anim { animation: bat-thumbs-up 0.8s cubic-bezier(0.5, 0.05, 1, 0.5) infinite alternate; }
+        @keyframes bat-thumbs-up { 
+            0% { transform: translateY(0) scale(1) rotate(-3deg); } 
+            100% { transform: translateY(-15px) scale(1.1) rotate(3deg); } 
+        }
 
-        @keyframes float-bat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        /* Joker Mocking / Laughing Animation */
+        .joker-anim { animation: joker-laugh-point 0.15s infinite alternate; }
+        @keyframes joker-laugh-point { 
+            0% { transform: scale(1.1) translateX(-5px) rotate(-5deg); } 
+            100% { transform: scale(1.2) translateX(5px) rotate(5deg); } 
+        }
+
+        .comic-text { font-size: 24px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: 1px; line-height: 1.3; }
+        #batmanPopup { border-color: #39ff14; }
+        #batmanPopup .comic-text { color: #39ff14; text-shadow: 3px 3px 0px #000; }
+        #jokerPopup { border-color: #ff003c; }
+        #jokerPopup .comic-text { color: #ff003c; font-family: 'Courier New', Courier, monospace; text-shadow: 3px 3px 0px #000; }
 
         .distraction-list { list-style: none; font-size: 13px; color: var(--text-muted); }
         .distraction-list li { padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
@@ -169,9 +177,7 @@
         .cal-empty { border: none; cursor: default; }
         .cal-empty:hover { transform: none; box-shadow: none; border: none; }
         
-        /* NEW: Calendar Image Icon CSS */
         .perf-icon { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.3); z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.8); }
-        
         .note-dot { position: absolute; bottom: 2px; left: 4px; font-size: 14px; }
 
         .level-1 { background: rgba(245, 199, 26, 0.2); color: white;}
@@ -196,14 +202,14 @@
 </head>
 <body class="idle-mode">
 
-    <!-- OVERLAYS FOR MOTIVATION -->
+    <!-- 3D OVERLAYS FOR MOTIVATION -->
     <div id="batmanPopup" class="comic-popup">
-        <img src="batman.png" alt="Batman"> 
+        <img src="batman.png" id="batmanImg" class="bat-anim" alt="Batman"> 
         <div class="comic-text" id="batmanText"></div>
     </div>
     
     <div id="jokerPopup" class="comic-popup">
-        <img src="joker.png" alt="Joker"> 
+        <img src="images.jpeg" id="jokerImg" class="joker-anim" alt="Joker"> 
         <div class="comic-text" id="jokerText"></div>
     </div>
 
@@ -293,10 +299,12 @@
             <div id="analytics" class="tab-content">
                 <div class="card">
                     <div class="card-header"><span>Cloud Analytics</span></div>
+                    <!-- NEW: ADDED 4TH BLOCK COUNTER BOX -->
                     <div class="stat-grid">
                         <div class="stat-box"><h4>Total Sessions</h4><p id="statSessions">0</p></div>
                         <div class="stat-box"><h4>Total Hours</h4><p id="statHours">0.0</p></div>
                         <div class="stat-box"><h4>Mean Focus</h4><p id="statFocus">0.0</p></div>
+                        <div class="stat-box"><h4>Blocks Ticked</h4><p id="statBlocks">0</p></div>
                     </div>
                     <button class="export-btn" onclick="exportDataToExcel()">DOWNLOAD EXCEL DATA (CSV)</button>
                 </div>
@@ -341,17 +349,24 @@
         const punishmentsList = ["Donate ₹20 to charity", "No favorite food today", "Skip dessert tonight", "No entertainment for the evening"];
 
         const batmanVault = [
-            "Get back to work. Gotham needs you to pass.",
+            "Good work. Gotham needs you to pass.",
             "Focus! Statistics is justice.",
-            "I'm Batman. And you're wasting time.",
-            "Are you ready for the Endgame?"
+            "I'm Batman. And you're doing great.",
+            "Are you ready to crush the exam?"
         ];
         
         const jokerVault = [
             "Hahaha! Keep dreaming, kid!",
             "Why so serious? Take a nap!",
             "You really think you can pass?",
-            "Did you learn something? Or are you just joking around?"
+            "Look at you, slacking off! Hahaha!"
+        ];
+        
+        const febJokerVault = [
+            "THE ENDGAME IS HERE! AHAHA!",
+            "ARE YOU READY FOR THE LAST DANCE?!",
+            "TIME'S UP, KID! LET'S SEE WHAT YOU'VE GOT!",
+            "THE EXAM IS COMING! NO ESCAPE!"
         ];
 
         auth.onAuthStateChanged(user => {
@@ -489,23 +504,31 @@
 
             if (text && currentUser) {
                 await db.collection('users').doc(currentUser.uid).collection('distractions').add({ text: text, createdAt: new Date().toISOString() });
-                
                 input.value = '';
 
                 const isJokerMonth = (calCurrentDate.getFullYear() === 2027 && calCurrentDate.getMonth() === 1);
                 
-                if (isJokerMonth || lowerText.includes('lazy') || lowerText.includes('quit')) {
+                if (isJokerMonth || lowerText.includes('lazy') || lowerText.includes('quit') || lowerText.includes('sleep') || lowerText.includes('tired')) {
                     const p = document.getElementById('jokerPopup');
                     const t = document.getElementById('jokerText');
-                    t.innerText = jokerVault[Math.floor(Math.random() * jokerVault.length)];
+                    
+                    // Set correct image and vault based on month
+                    if (isJokerMonth) {
+                        document.getElementById('jokerImg').src = 'joker2.png';
+                        t.innerText = febJokerVault[Math.floor(Math.random() * febJokerVault.length)];
+                    } else {
+                        document.getElementById('jokerImg').src = 'images.jpeg';
+                        t.innerText = jokerVault[Math.floor(Math.random() * jokerVault.length)];
+                    }
+                    
                     p.classList.add('show');
-                    setTimeout(() => { p.classList.remove('show'); }, 3000);
+                    setTimeout(() => { p.classList.remove('show'); }, 3500);
                 } else {
                     const p = document.getElementById('batmanPopup');
                     const t = document.getElementById('batmanText');
                     t.innerText = batmanVault[Math.floor(Math.random() * batmanVault.length)];
                     p.classList.add('show');
-                    setTimeout(() => { p.classList.remove('show'); }, 3000);
+                    setTimeout(() => { p.classList.remove('show'); }, 3500);
                 }
             }
         }
@@ -603,11 +626,11 @@
                     else if (hours > 5 && hours <= 7) colorClass = 'level-3';
                     else if (hours > 7) colorClass = 'level-4';
                     
-                    // --- NEW: Using your custom images in the calendar grid ---
+                    const jokerIcon = isJokerMonth ? 'joker2.png' : 'images.jpeg';
                     if (hours >= (dailyTarget * 0.5)) {
                         perfIconHTML = `<img src="batman.png" class="perf-icon" title="Goal Met: Batman Approved!" alt="Batman">`;
                     } else {
-                        perfIconHTML = `<img src="joker.png" class="perf-icon" title="Slacking: The Joker is laughing at you" alt="Joker">`;
+                        perfIconHTML = `<img src="${jokerIcon}" class="perf-icon" title="Slacking: The Joker is laughing at you" alt="Joker">`;
                     }
                 }
                 
@@ -656,13 +679,28 @@
             if (!currentUser) return;
             const todayStr = new Date().toDateString();
 
-            db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(todayStr).onSnapshot(doc => {
-                if (doc.exists && doc.data().blocks) {
-                    skipBoxSync = true; 
-                    const checkboxes = document.querySelectorAll('.task-radio');
-                    doc.data().blocks.forEach((isChecked, i) => { if (checkboxes[i]) checkboxes[i].checked = isChecked; });
-                    setTimeout(() => { skipBoxSync = false; }, 500); 
-                }
+            // --- SYNC DAILY BLOCKS AND CALCULATE "ALL TIME BLOCKS TICKED" ---
+            db.collection('users').doc(currentUser.uid).collection('dailyStatus').onSnapshot(snapshot => {
+                let allTimeBlocksChecked = 0;
+                
+                snapshot.forEach(doc => {
+                    if (doc.id !== 'activeTimer') {
+                        const data = doc.data();
+                        if (data.blocks) {
+                            allTimeBlocksChecked += data.blocks.filter(b => b === true).length;
+                            
+                            // If this is today's document, also update the UI checkboxes
+                            if (doc.id === todayStr) {
+                                skipBoxSync = true; 
+                                const checkboxes = document.querySelectorAll('.task-radio');
+                                data.blocks.forEach((isChecked, i) => { if (checkboxes[i]) checkboxes[i].checked = isChecked; });
+                                setTimeout(() => { skipBoxSync = false; }, 500); 
+                            }
+                        }
+                    }
+                });
+                // Update the Analytics UI for total blocks
+                document.getElementById('statBlocks').innerText = allTimeBlocksChecked;
             });
 
             db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc('activeTimer').onSnapshot(doc => {
