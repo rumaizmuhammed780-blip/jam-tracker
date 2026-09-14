@@ -138,11 +138,9 @@
             line-height: 1.3;
         }
 
-        /* Batman Variant */
         #batmanPopup { border-color: #39ff14; }
         #batmanPopup .comic-text { color: #39ff14; text-shadow: 2px 2px 0px #000; }
         
-        /* Joker Variant */
         #jokerPopup { border-color: #ff003c; }
         #jokerPopup .comic-text { color: #ff003c; font-family: 'Courier New', Courier, monospace; text-shadow: 2px 2px 0px #000; }
 
@@ -171,7 +169,9 @@
         .cal-empty { border: none; cursor: default; }
         .cal-empty:hover { transform: none; box-shadow: none; border: none; }
         
-        .perf-icon { position: absolute; top: 2px; left: 2px; font-size: 18px; line-height: 1; text-shadow: 0 0 5px rgba(0,0,0,0.8); }
+        /* NEW: Calendar Image Icon CSS */
+        .perf-icon { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.3); z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+        
         .note-dot { position: absolute; bottom: 2px; left: 4px; font-size: 14px; }
 
         .level-1 { background: rgba(245, 199, 26, 0.2); color: white;}
@@ -285,7 +285,7 @@
                     <div class="calendar-grid" id="calDaysGrid"></div>
                     <p style="text-align:center; margin-top:20px; font-size:12px; color:var(--text-muted);">
                         Click any date to add or edit a target note. <br>
-                        >= 50% Target = 🦇👍 | < 50% Target = 🤡😂
+                        >= 50% Target = Batman Approved | < 50% Target = Joker Mocking
                     </p>
                 </div>
             </div>
@@ -603,10 +603,11 @@
                     else if (hours > 5 && hours <= 7) colorClass = 'level-3';
                     else if (hours > 7) colorClass = 'level-4';
                     
+                    // --- NEW: Using your custom images in the calendar grid ---
                     if (hours >= (dailyTarget * 0.5)) {
-                        perfIconHTML = `<div class="perf-icon" title="Goal Met: Batman Approved!">🦇👍</div>`;
+                        perfIconHTML = `<img src="batman.png" class="perf-icon" title="Goal Met: Batman Approved!" alt="Batman">`;
                     } else {
-                        perfIconHTML = `<div class="perf-icon" title="Slacking: The Joker is laughing at you">🤡😂</div>`;
+                        perfIconHTML = `<img src="joker.png" class="perf-icon" title="Slacking: The Joker is laughing at you" alt="Joker">`;
                     }
                 }
                 
