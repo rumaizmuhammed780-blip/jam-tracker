@@ -96,10 +96,57 @@
         .distraction-input { flex: 1; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 4px; }
         .distraction-btn { background: var(--border-color); color: var(--text-main); border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; }
         
-        /* Batman Animation Container */
-        #motivationMsgContainer { display: none; align-items: center; gap: 12px; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; border-left: 4px solid var(--accent-green); }
-        .bat-bounce { font-size: 30px; animation: bounce-bat 0.6s infinite alternate cubic-bezier(0.5, 0.05, 1, 0.5); }
-        @keyframes bounce-bat { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+        /* Comic Motivation Popups */
+        .comic-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            z-index: 100;
+            background: rgba(0,0,0,0.9);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 4px solid;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            width: 90%;
+            max-width: 400px;
+        }
+        .comic-popup.show {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .comic-popup img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid white;
+            margin-bottom: 15px;
+            animation: float-bat 2s infinite ease-in-out;
+        }
+        .comic-text {
+            font-size: 22px;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+
+        /* Batman Variant */
+        #batmanPopup { border-color: #39ff14; }
+        #batmanPopup .comic-text { color: #39ff14; text-shadow: 2px 2px 0px #000; }
+        
+        /* Joker Variant */
+        #jokerPopup { border-color: #ff003c; }
+        #jokerPopup .comic-text { color: #ff003c; font-family: 'Courier New', Courier, monospace; text-shadow: 2px 2px 0px #000; }
+
+        @keyframes float-bat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
         .distraction-list { list-style: none; font-size: 13px; color: var(--text-muted); }
         .distraction-list li { padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
@@ -108,7 +155,6 @@
         .task-radio { width: 20px; height: 20px; margin-right: 15px; cursor: pointer; }
         .end-day-btn { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); margin-top: 15px; cursor: pointer; }
 
-        /* Stats & Calendar Additions */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .stat-box { background: var(--bg-color); padding: 15px; border: 1px solid var(--border-color); text-align: center; border-radius: 6px; }
         .stat-box p { font-size: 24px; font-weight: bold; color: var(--accent-green); }
@@ -120,7 +166,6 @@
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
         .cal-header-day { text-align: center; font-size: 11px; color: var(--text-muted); padding-bottom: 5px; }
         
-        /* Calendar Days & Icons */
         .cal-day { position: relative; aspect-ratio: 1; border: 1px solid var(--border-color); border-radius: 4px; display: flex; align-items: flex-end; justify-content: flex-end; padding: 5px; font-size: 14px; font-weight:bold; color: var(--text-muted); cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
         .cal-day:hover { transform: scale(1.1); z-index: 10; border-color: var(--accent-green); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .cal-empty { border: none; cursor: default; }
@@ -134,7 +179,6 @@
         .level-3 { background: rgba(245, 199, 26, 0.8); color: black;}
         .level-4 { background: var(--accent-green); color: black;}
 
-        /* Endgame Danger Day */
         .danger-day {
             background-color: #ff0000 !important;
             color: #ffffff !important;
@@ -152,8 +196,18 @@
 </head>
 <body class="idle-mode">
 
+    <!-- OVERLAYS FOR MOTIVATION -->
+    <div id="batmanPopup" class="comic-popup">
+        <img src="batman.png" alt="Batman"> 
+        <div class="comic-text" id="batmanText"></div>
+    </div>
+    
+    <div id="jokerPopup" class="comic-popup">
+        <img src="joker.png" alt="Joker"> 
+        <div class="comic-text" id="jokerText"></div>
+    </div>
+
     <div class="container">
-        <!-- AUTH SECTION -->
         <div id="authSection">
             <div class="auth-card">
                 <h2 style="color:var(--accent-green); margin-bottom:15px;">BATCOMPUTER ACCESS</h2>
@@ -166,7 +220,6 @@
             </div>
         </div>
 
-        <!-- MAIN DASHBOARD -->
         <div id="appSection">
             <div class="header">
                 <div class="header-left">
@@ -187,7 +240,6 @@
                 <button class="tab-btn" onclick="switchTab('punishments')">⚠️ LOGS</button>
             </div>
 
-            <!-- TODAY TAB -->
             <div id="today" class="tab-content active">
                 <div class="card">
                     <div class="card-header">
@@ -208,12 +260,6 @@
                         <button type="submit" class="distraction-btn">DUMP</button>
                     </form>
                     
-                    <!-- NEW: Batman Animated Motivation Box -->
-                    <div id="motivationMsgContainer">
-                        <div class="bat-bounce">🦇💬</div>
-                        <div id="motivationMsg" style="color: var(--text-main); font-size: 16px; font-weight: bold; font-style: italic; line-height: 1.4;"></div>
-                    </div>
-                    
                     <ul class="distraction-list" id="distractionList"></ul>
                     <button class="clear-btn" onclick="clearDistractions()" style="border-color: var(--text-muted); color: var(--text-muted); background:transparent; padding:5px 10px; margin-top:10px; border-radius:4px;">Clear Dump</button>
                 </div>
@@ -225,7 +271,6 @@
                 </div>
             </div>
 
-            <!-- CALENDAR TAB -->
             <div id="calendar" class="tab-content">
                 <div class="card">
                     <div class="card-header"><span>Monthly Progress Map</span></div>
@@ -240,12 +285,11 @@
                     <div class="calendar-grid" id="calDaysGrid"></div>
                     <p style="text-align:center; margin-top:20px; font-size:12px; color:var(--text-muted);">
                         Click any date to add or edit a target note. <br>
-                        >= 50% Target = 🦇 | < 50% Target = 🤡
+                        >= 50% Target = 🦇👍 | < 50% Target = 🤡😂
                     </p>
                 </div>
             </div>
 
-            <!-- ANALYTICS TAB -->
             <div id="analytics" class="tab-content">
                 <div class="card">
                     <div class="card-header"><span>Cloud Analytics</span></div>
@@ -258,7 +302,6 @@
                 </div>
             </div>
 
-            <!-- PUNISHMENTS TAB -->
             <div id="punishments" class="tab-content">
                 <div class="card">
                     <div class="card-header"><span style="color:var(--accent-red)">Punishment Record</span></div>
@@ -269,7 +312,6 @@
     </div>
 
     <script>
-        // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyAYWfRrydLqQwInIeGWZCyJVjKowybREqY",
             authDomain: "jam-tracker-dc7e1.firebaseapp.com",
@@ -298,28 +340,19 @@
 
         const punishmentsList = ["Donate ₹20 to charity", "No favorite food today", "Skip dessert tonight", "No entertainment for the evening"];
 
-        const motivationVault = {
-            sleepy: [
-                "Stand up, stretch, and grab a quick glass of water. Wake the system up.",
-                "Oxygen beats caffeine. Do 10 jumping jacks right now.",
-                "Fatigue is temporary. Splash some cold water on your face. You've got this."
-            ],
-            stuck: [
-                "Mathematical Statistics is tough, but so are you. Take a deep breath.",
-                "Every wrong attempt is one step closer to the right one. Keep digging.",
-                "Don't let one problem derail you. Break it down to fundamentals."
-            ],
-            distracted: [
-                "Protect your focus! Save the screen time for a good Malayalam comedy tonight as a reward.",
-                "Put the phone out of arm's reach. Your future self will thank you.",
-                "The Batcomputer demands absolute focus. Close the tabs and get back in the zone."
-            ],
-            general: [
-                "Thought dumped. Mind cleared. Back to the mission.",
-                "Acknowledged. Now let it go and focus on the next block.",
-                "Clear space, clear mind. Keep pushing forward."
-            ]
-        };
+        const batmanVault = [
+            "Get back to work. Gotham needs you to pass.",
+            "Focus! Statistics is justice.",
+            "I'm Batman. And you're wasting time.",
+            "Are you ready for the Endgame?"
+        ];
+        
+        const jokerVault = [
+            "Hahaha! Keep dreaming, kid!",
+            "Why so serious? Take a nap!",
+            "You really think you can pass?",
+            "Did you learn something? Or are you just joking around?"
+        ];
 
         auth.onAuthStateChanged(user => {
             if (user) {
@@ -332,7 +365,7 @@
                 currentUser = null;
                 document.getElementById('authSection').style.display = "block";
                 document.getElementById('appSection').style.display = "none";
-                updateTheme(); // Ensure theme rests on logout
+                updateTheme(); 
             }
         });
 
@@ -359,7 +392,7 @@
             startClock();
             setupDay();
             syncCloudData();
-            updateTheme(); // Set initial theme based on month
+            updateTheme(); 
         }
 
         function startClock() {
@@ -451,30 +484,29 @@
         async function addDistraction(e) {
             e.preventDefault();
             const input = document.getElementById('distractionInput');
-            const msgBox = document.getElementById('motivationMsg');
-            const msgContainer = document.getElementById('motivationMsgContainer');
             const text = input.value.trim();
             const lowerText = text.toLowerCase();
 
             if (text && currentUser) {
                 await db.collection('users').doc(currentUser.uid).collection('distractions').add({ text: text, createdAt: new Date().toISOString() });
                 
-                let category = 'general';
-                if (lowerText.includes('sleep') || lowerText.includes('tired') || lowerText.includes('exhaust')) category = 'sleepy';
-                else if (lowerText.includes('hard') || lowerText.includes('stuck') || lowerText.includes('confused') || lowerText.includes('stats')) category = 'stuck';
-                else if (lowerText.includes('phone') || lowerText.includes('reel') || lowerText.includes('youtube') || lowerText.includes('movie')) category = 'distracted';
-                
-                const responseArray = motivationVault[category];
-                msgBox.innerText = responseArray[Math.floor(Math.random() * responseArray.length)];
-
-                // Show Batman Animation
-                msgContainer.style.display = 'flex';
                 input.value = '';
+
+                const isJokerMonth = (calCurrentDate.getFullYear() === 2027 && calCurrentDate.getMonth() === 1);
                 
-                setTimeout(() => { 
-                    msgContainer.style.display = 'none'; 
-                    msgBox.innerText = ""; 
-                }, 4500);
+                if (isJokerMonth || lowerText.includes('lazy') || lowerText.includes('quit')) {
+                    const p = document.getElementById('jokerPopup');
+                    const t = document.getElementById('jokerText');
+                    t.innerText = jokerVault[Math.floor(Math.random() * jokerVault.length)];
+                    p.classList.add('show');
+                    setTimeout(() => { p.classList.remove('show'); }, 3000);
+                } else {
+                    const p = document.getElementById('batmanPopup');
+                    const t = document.getElementById('batmanText');
+                    t.innerText = batmanVault[Math.floor(Math.random() * batmanVault.length)];
+                    p.classList.add('show');
+                    setTimeout(() => { p.classList.remove('show'); }, 3000);
+                }
             }
         }
 
@@ -514,10 +546,8 @@
             }
         };
 
-        // --- MASTER THEME CONTROLLER ---
         function updateTheme() {
             if (!currentUser) return;
-            // Force Joker Theme if it is February 2027
             const isJokerMonth = (calCurrentDate.getFullYear() === 2027 && calCurrentDate.getMonth() === 1);
             
             if (isJokerMonth) {
@@ -535,7 +565,7 @@
 
         function changeMonth(dir) {
             calCurrentDate.setMonth(calCurrentDate.getMonth() + dir);
-            updateTheme(); // Check if we entered or left Feb 2027
+            updateTheme(); 
             renderCalendar();
         }
 
@@ -558,11 +588,9 @@
             for (let i = 1; i <= daysInMonth; i++) {
                 const dString = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                 
-                // Color & Target Logic
                 const minutes = dailyTotalsMap[dString] || 0;
                 const hours = minutes / 60;
                 
-                // Find Target based on Day of the Week (Sun=0, Sat=6)
                 const dayOfWeek = new Date(year, month, i).getDay();
                 const dailyTarget = (dayOfWeek === 0 || dayOfWeek === 6) ? 4.0 : 7.5;
                 
@@ -575,7 +603,6 @@
                     else if (hours > 5 && hours <= 7) colorClass = 'level-3';
                     else if (hours > 7) colorClass = 'level-4';
                     
-                    // Display Batman (>= 50%) or Laughing Joker (< 50%)
                     if (hours >= (dailyTarget * 0.5)) {
                         perfIconHTML = `<div class="perf-icon" title="Goal Met: Batman Approved!">🦇👍</div>`;
                     } else {
@@ -661,7 +688,7 @@
                         btn.className = "punch-btn btn-in";
                         status.innerText = `stopped`;
                     }
-                    updateTheme(); // Adjust body theme class based on new punch state
+                    updateTheme(); 
                 }
             });
 
