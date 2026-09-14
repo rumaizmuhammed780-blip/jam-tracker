@@ -300,21 +300,43 @@
             }, 1000);
         }
 
+        // --- RESTORED: Exact dynamic daily schedules ---
         function setupDay() {
             const day = new Date().getDay();
             const badge = document.getElementById('dayTypeBadge');
             let tasksHTML = '';
-            targetHours = (day === 0 || day === 6) ? 4.0 : 7.5;
-            badge.innerText = (day === 0 || day === 6) ? "WEEKEND" : (day === 5 ? "FRIDAY" : "WEEKDAY");
-            
-            tasksHTML = `
-                <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 1 (Stats)</strong><br><small>1.5 hrs</small></div></li>
-                <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python/Code Practice</strong><br><small>1.0 hr</small></div></li>
-                <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 2 (Stats)</strong><br><small>1.5 hrs</small></div></li>
-                <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 3 (Review)</strong><br><small>1.5 hrs</small></div></li>`;
-            
+
+            if (day === 0 || day === 6) {
+                badge.innerText = "WEEKEND";
+                targetHours = 4.0;
+                tasksHTML = `
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 1 (Stats)</strong><br><small>09:30 AM – 11:00 AM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice</strong><br><small>11:15 AM – 12:15 PM (1.0 hr)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 2 (Stats)</strong><br><small>04:00 PM – 05:30 PM (1.5 hrs)</small></div></li>`;
+            } else if (day === 5) {
+                badge.innerText = "FRIDAY";
+                targetHours = 7.5;
+                tasksHTML = `
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 1 (Stats)</strong><br><small>09:30 AM – 11:00 AM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 1</strong><br><small>11:00 AM – 12:00 PM (1.0 hr)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 2 (Stats)</strong><br><small>02:00 PM – 03:30 PM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 3 (Stats)</strong><br><small>04:00 PM – 05:30 PM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 4 (Stats)</strong><br><small>06:00 PM – 07:00 PM (1.0 hr)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 2</strong><br><small>07:15 PM – 08:15 PM (1.0 hr)</small></div></li>`;
+            } else {
+                badge.innerText = "WEEKDAY";
+                targetHours = 7.5;
+                tasksHTML = `
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 1 (Stats)</strong><br><small>09:30 AM – 11:00 AM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 1</strong><br><small>11:15 AM – 12:15 PM (1.0 hr)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 2 (Stats)</strong><br><small>02:00 PM – 03:30 PM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 3 (Stats)</strong><br><small>04:00 PM – 05:30 PM (1.5 hrs)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Study Block 4 (Stats)</strong><br><small>06:30 PM – 07:30 PM (1.0 hr)</small></div></li>
+                    <li class="task-item"><input type="checkbox" class="task-radio"> <div><strong>Python Practice 2</strong><br><small>07:45 PM – 08:45 PM (1.0 hr)</small></div></li>`;
+            }
             document.getElementById('taskList').innerHTML = tasksHTML;
             
+            // Re-bind cloud sync for the checkboxes
             document.querySelectorAll('.task-radio').forEach(box => {
                 box.addEventListener('change', async () => {
                     if (!currentUser || skipBoxSync) return;
@@ -408,7 +430,7 @@
             await db.collection('users').doc(currentUser.uid).collection('dailyStatus').doc(new Date().toDateString()).set({ blocks: [] });
         }
 
-        // --- NEW: CALENDAR LOGIC ---
+        // --- CALENDAR LOGIC ---
         function changeMonth(dir) {
             calCurrentDate.setMonth(calCurrentDate.getMonth() + dir);
             renderCalendar();
@@ -448,7 +470,7 @@
             }
         }
 
-        // --- NEW: CSV EXPORT LOGIC ---
+        // --- CSV EXPORT LOGIC ---
         async function exportDataToExcel() {
             if(!currentUser) return;
             alert("Fetching your cloud data. The download will start automatically.");
