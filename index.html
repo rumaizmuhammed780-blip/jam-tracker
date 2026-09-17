@@ -60,7 +60,7 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
 
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; display: flex; justify-content: center; transition: all 0.8s ease-in-out; min-height: 100vh; position: relative; overflow-x: hidden; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; display: flex; justify-content: center; transition: all 0.8s ease-in-out; min-height: 100vh; position: relative; overflow-x: hidden; perspective: 1000px; }
         .container { width: 100%; max-width: 600px; z-index: 1; }
 
         #authSection { display: block; margin-top: 50px; }
@@ -100,7 +100,7 @@
         .distraction-input { flex: 1; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 4px; }
         .distraction-btn { background: var(--border-color); color: var(--text-main); border: none; padding: 0 15px; border-radius: 4px; cursor: pointer; }
         
-        /* --- COMIC MOTIVATION POPUPS (Animations Removed, Relies on GIF/JPGs) --- */
+        /* --- 3D COMIC MOTIVATION POPUPS --- */
         .comic-popup {
             display: none;
             position: fixed;
@@ -164,7 +164,7 @@
         .cal-empty { border: none; cursor: default; }
         .cal-empty:hover { transform: none; box-shadow: none; border: none; }
         
-        .perf-icon { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.3); z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+        .perf-icon { position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.3); z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.8); }
         
         .note-dot { position: absolute; bottom: 2px; left: 4px; font-size: 14px; }
 
@@ -190,14 +190,14 @@
 </head>
 <body class="idle-mode">
 
-    <!-- OVERLAYS FOR MOTIVATION (Now using the animated jpgs) -->
+    <!-- OVERLAYS FOR MOTIVATION (Now strictly requiring .gif extensions) -->
     <div id="batmanPopup" class="comic-popup">
-        <img src="Batman.jpg" id="batmanImg" alt="Batman"> 
+        <img src="Batman.gif" id="batmanImg" alt="Batman"> 
         <div class="comic-text" id="batmanText"></div>
     </div>
     
     <div id="jokerPopup" class="comic-popup">
-        <img src="Joker.jpg" id="jokerImg" alt="Joker"> 
+        <img src="Joker.gif" id="jokerImg" alt="Joker"> 
         <div class="comic-text" id="jokerText"></div>
     </div>
 
@@ -287,7 +287,6 @@
             <div id="analytics" class="tab-content">
                 <div class="card">
                     <div class="card-header"><span>Cloud Analytics</span></div>
-                    <!-- 4TH BLOCK COUNTER BOX -->
                     <div class="stat-grid">
                         <div class="stat-box"><h4>Total Sessions</h4><p id="statSessions">0</p></div>
                         <div class="stat-box"><h4>Total Hours</h4><p id="statHours">0.0</p></div>
@@ -501,12 +500,11 @@
                     const p = document.getElementById('jokerPopup');
                     const t = document.getElementById('jokerText');
                     
-                    // Switch to Joker 2 dynamically in February for the popup image
                     if (isJokerMonth) {
                         document.getElementById('jokerImg').src = 'joker2.png';
                         t.innerText = febJokerVault[Math.floor(Math.random() * febJokerVault.length)];
                     } else {
-                        document.getElementById('jokerImg').src = 'Joker.jpg'; // Uses your animated laughing joker
+                        document.getElementById('jokerImg').src = 'Joker.gif'; 
                         t.innerText = jokerVault[Math.floor(Math.random() * jokerVault.length)];
                     }
                     
@@ -516,7 +514,7 @@
                     const p = document.getElementById('batmanPopup');
                     const t = document.getElementById('batmanText');
                     
-                    document.getElementById('batmanImg').src = 'Batman.jpg'; // Uses your animated thumbs up
+                    document.getElementById('batmanImg').src = 'Batman.gif';
                     t.innerText = batmanVault[Math.floor(Math.random() * batmanVault.length)];
                     
                     p.classList.add('show');
@@ -618,10 +616,10 @@
                     else if (hours > 5 && hours <= 7) colorClass = 'level-3';
                     else if (hours > 7) colorClass = 'level-4';
                     
-                    const jokerIcon = isJokerMonth ? 'joker2.png' : 'joker.png';
+                    const jokerIcon = isJokerMonth ? 'joker2.png' : 'Joker.gif';
                     
                     if (hours >= (dailyTarget * 0.5)) {
-                        perfIconHTML = `<img src="batman.png" onerror="this.style.display='none'" class="perf-icon" title="Goal Met: Batman Approved!" alt="Batman">`;
+                        perfIconHTML = `<img src="Batman.gif" onerror="this.style.display='none'" class="perf-icon" title="Goal Met: Batman Approved!" alt="Batman">`;
                     } else {
                         perfIconHTML = `<img src="${jokerIcon}" onerror="this.style.display='none'" class="perf-icon" title="Slacking: The Joker is laughing at you" alt="Joker">`;
                     }
@@ -672,7 +670,6 @@
             if (!currentUser) return;
             const todayStr = new Date().toDateString();
 
-            // SYNC ALL-TIME BLOCKS COMPLETED
             db.collection('users').doc(currentUser.uid).collection('dailyStatus').onSnapshot(snapshot => {
                 let allTimeBlocksChecked = 0;
                 
