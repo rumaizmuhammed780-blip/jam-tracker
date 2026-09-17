@@ -36,26 +36,26 @@
             --tab-active: #3b0764 !important;
         }
         
-        /* Floating Joker Background Watermark */
+        /* Floating Joker Background Watermark (INCREASED SIZE) */
         body.joker-mode::before {
             content: "";
             position: fixed;
-            bottom: -40px;
-            right: -40px;
-            width: 450px;
-            height: 450px;
+            bottom: -20px;
+            right: -20px;
+            width: 650px; 
+            height: 650px;
             background-image: url('joker2.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: bottom right;
-            opacity: 0.15;
+            opacity: 0.25; 
             z-index: -1;
-            animation: float-joker 5s ease-in-out infinite;
+            animation: float-joker 6s ease-in-out infinite;
             pointer-events: none;
         }
         @keyframes float-joker {
             0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-30px) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(-3deg); }
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
@@ -131,15 +131,49 @@
             object-fit: cover;
             border-radius: 50%;
             border: 5px solid white;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
 
-        .comic-text { font-size: 24px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: 1px; line-height: 1.3; }
+        .comic-text { font-size: 24px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: 1px; line-height: 1.3; margin-top: 15px; }
+        
         #batmanPopup { border-color: #39ff14; }
         #batmanPopup .comic-text { color: #39ff14; text-shadow: 3px 3px 0px #000; }
+        
         #jokerPopup { border-color: #ff003c; }
-        #jokerPopup .comic-text { color: #ff003c; font-family: 'Courier New', Courier, monospace; text-shadow: 3px 3px 0px #000; }
+
+        /* --- NEW: COMIC SPEECH BUBBLE FOR JOKER --- */
+        #jokerPopup .comic-text { 
+            color: #000; 
+            background: #fff;
+            border: 3px solid #000;
+            border-radius: 20px;
+            padding: 15px;
+            font-family: 'Comic Sans MS', cursive, sans-serif; 
+            text-shadow: none; 
+            position: relative;
+        }
+        /* The tail of the speech bubble */
+        #jokerPopup .comic-text::before {
+            content: '';
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            margin-left: -13px;
+            border-width: 13px;
+            border-style: solid;
+            border-color: transparent transparent #000 transparent;
+        }
+        #jokerPopup .comic-text::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            margin-left: -10px;
+            border-width: 10px;
+            border-style: solid;
+            border-color: transparent transparent #fff transparent;
+        }
 
         .distraction-list { list-style: none; font-size: 13px; color: var(--text-muted); }
         .distraction-list li { padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
@@ -190,7 +224,7 @@
 </head>
 <body class="idle-mode">
 
-    <!-- OVERLAYS FOR MOTIVATION (Now strictly requiring .gif extensions) -->
+    <!-- OVERLAYS FOR MOTIVATION -->
     <div id="batmanPopup" class="comic-popup">
         <img src="Batman.gif" id="batmanImg" alt="Batman"> 
         <div class="comic-text" id="batmanText"></div>
@@ -349,12 +383,12 @@
             "Look at you, slacking off! Hahaha!"
         ];
         
-        // ENDGAME DIALOGUE
+        // NEW ENDGAME DIALOGUE (FEB 2027)
         const febJokerVault = [
-            "THE ENDGAME IS HERE! AHAHA!",
-            "ARE YOU READY FOR THE LAST DANCE?!",
-            "TIME'S UP, KID! LET'S SEE WHAT YOU'VE GOT!",
-            "THE EXAM IS COMING! NO ESCAPE!"
+            "THIS IS THE END... NOW YOU ARE GOING FOR THE LAST DANCE!",
+            "THE ENDGAME IS HERE... LET'S DANCE!",
+            "TIME'S UP, KID! LET'S HAVE ONE LAST DANCE!",
+            "NO MORE JOKES. THIS IS THE FINAL DANCE!"
         ];
 
         auth.onAuthStateChanged(user => {
@@ -500,8 +534,9 @@
                     const p = document.getElementById('jokerPopup');
                     const t = document.getElementById('jokerText');
                     
+                    // NEW: Use image_47a0bd.jpg for February
                     if (isJokerMonth) {
-                        document.getElementById('jokerImg').src = 'joker2.png';
+                        document.getElementById('jokerImg').src = 'image_47a0bd.jpg';
                         t.innerText = febJokerVault[Math.floor(Math.random() * febJokerVault.length)];
                     } else {
                         document.getElementById('jokerImg').src = 'Joker.gif'; 
@@ -616,10 +651,10 @@
                     else if (hours > 5 && hours <= 7) colorClass = 'level-3';
                     else if (hours > 7) colorClass = 'level-4';
                     
-                    const jokerIcon = isJokerMonth ? 'joker2.png' : 'Joker.gif';
+                    const jokerIcon = isJokerMonth ? 'joker2.png' : 'joker.png';
                     
                     if (hours >= (dailyTarget * 0.5)) {
-                        perfIconHTML = `<img src="Batman.gif" onerror="this.style.display='none'" class="perf-icon" title="Goal Met: Batman Approved!" alt="Batman">`;
+                        perfIconHTML = `<img src="batman.png" onerror="this.style.display='none'" class="perf-icon" title="Goal Met: Batman Approved!" alt="Batman">`;
                     } else {
                         perfIconHTML = `<img src="${jokerIcon}" onerror="this.style.display='none'" class="perf-icon" title="Slacking: The Joker is laughing at you" alt="Joker">`;
                     }
